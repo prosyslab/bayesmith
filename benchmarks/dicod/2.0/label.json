@@ -1,0 +1,11 @@
+[{
+  "project": "dicod-2.0",
+  "source": {
+    "file": "main.c",
+    "line": 1355
+  },
+  "sink": {
+    "file": "main.c",
+    "line": 1291
+  }
+}]

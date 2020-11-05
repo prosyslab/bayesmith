@@ -1,0 +1,15 @@
+[
+  {
+    "project": "kilo-0.0.1",
+    "source": {
+      "file": "kilo.c",
+      "line": 315
+    },
+    "sink": {
+      "file": "kilo.c",
+      "line": 564
+    },
+    "CVE": "CVE-2019-16096",
+    "report": "https://www.cvedetails.com/cve/CVE-2019-16096/"
+  }
+]

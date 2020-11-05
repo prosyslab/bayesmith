@@ -1,0 +1,10 @@
+[
+  {
+    "project": "patch-2.7.1",
+    "file": "pch.c",
+    "line": 2272,
+    "type": "buffer-overflow",
+    "CVE": "CVE-2016-10713",
+    "report": "https://www.cvedetails.com/cve/CVE-2016-10713/"
+  }
+]

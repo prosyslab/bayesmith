@@ -1,0 +1,9 @@
+[submodule "souffle"]
+	path = souffle
+	url = https://github.com/souffle-lang/souffle.git
+[submodule "libdai"]
+	path = libdai
+	url = https://github.com/prosyslab/libdai.git
+[submodule "sparrow"]
+	path = sparrow
+	url = https://github.com/prosyslab/sparrow.git

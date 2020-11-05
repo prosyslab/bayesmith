@@ -1,0 +1,12 @@
+[
+	{
+		"project":"bc-1.06",
+		"file":"storage.c",
+		"line":177
+	},
+	{
+		"project":"bc-1.06",
+		"file":"util.c",
+		"line":577
+	}
+]

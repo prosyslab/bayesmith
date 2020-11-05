@@ -1,0 +1,25 @@
+(library
+ (name bNet)
+ (wrapped false)
+ (modules bNet datalog integer_rules buffer_rules combinator)
+ (libraries ocamlgraph yojson batteries))
+
+(executable
+ (name driver)
+ (modules driver)
+ (libraries linenoise str unix))
+
+(executable
+ (name generator)
+ (modules generator)
+ (libraries batteries str unix bNet))
+
+(executable
+ (name visualizer)
+ (modules visualizer)
+ (libraries batteries linenoise ocamlgraph str unix yojson bNet))
+
+(executable
+ (name learn)
+ (modules learn)
+ (libraries unix bNet))

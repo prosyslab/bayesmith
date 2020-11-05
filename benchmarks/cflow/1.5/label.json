@@ -1,0 +1,10 @@
+[
+  {
+    "project": "cflow-1.5",
+    "file": "parser.c",
+    "line": 302,
+    "type": "buffer-overflow",
+    "CVE": "CVE-2019-16166",
+    "report": "https://www.cvedetails.com/cve/CVE-2019-16166"
+  }
+]
