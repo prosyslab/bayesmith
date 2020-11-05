@@ -56,6 +56,10 @@ let alarm_strcat = "AlarmStrcat"
 
 let alarm_strncpy = "AlarmStrncpy"
 
+let alarm_alloc_size = "AlarmAllocSize"
+
+let alarm_printf = "AlarmPrintf"
+
 let alarm_taint = "AlarmTaint"
 
 let assign = "Assign"
@@ -383,7 +387,11 @@ module Evaluation = struct
           (fun acc (_, d) -> if d < 0 then acc +. 1. else acc)
           0. diff_benchmarks
       in
-      let improved_ratio = num_improved /. num_bench in
+      let num_changed =
+        List.filter (fun (_, d) -> d <> 0) diff_benchmarks
+        |> List.length |> float_of_int
+      in
+      let improved_ratio = num_improved /. num_changed in
       log "%s" env.current_timestamp;
       log "# Last best iters: %d" env.best_iters;
       log "# Current total iters: %d" total_iters;
@@ -426,6 +434,8 @@ type features = {
   alarm_memmove : StringSet.t * int;
   alarm_strcat : StringSet.t * int;
   alarm_strncpy : StringSet.t * int;
+  alarm_alloc_size : StringSet.t * int;
+  alarm_printf : StringSet.t * int;
   alarm_taint : StringSet.t * int;
   (* node features *)
   assign : StringSet.t * int;
@@ -702,6 +712,8 @@ let read_features vc =
   let alarm_strcat_feat, alarm_strcat_pair = read alarm_strcat in
   let alarm_strncpy_feat, alarm_strncpy_pair = read alarm_strncpy in
   let alarm_taint_feat, alarm_taint_pair = read alarm_taint in
+  let alarm_alloc_size_feat, alarm_alloc_size_pair = read alarm_alloc_size in
+  let alarm_printf_feat, alarm_printf_pair = read alarm_printf in
   let assign_feat, assign_pair = read assign in
   let loophead_feat, loophead_pair = read loophead in
   let libcall_feat, libcall_pair = read libcall in
@@ -750,6 +762,8 @@ let read_features vc =
       alarm_strcat_pair;
       alarm_strncpy_pair;
       alarm_taint_pair;
+      alarm_alloc_size_pair;
+      alarm_printf_pair;
       assign_pair;
       loophead_pair;
       libcall_pair;
@@ -798,6 +812,8 @@ let read_features vc =
       alarm_memmove = alarm_memmove_feat;
       alarm_strcat = alarm_strcat_feat;
       alarm_strncpy = alarm_strncpy_feat;
+      alarm_alloc_size = alarm_alloc_size_feat;
+      alarm_printf = alarm_printf_feat;
       alarm_taint = alarm_taint_feat;
       assign = assign_feat;
       loophead = loophead_feat;
@@ -992,7 +1008,11 @@ let find_v_curves env =
   |> List.sort (fun a b -> compare b.VCurve.height_ratio a.VCurve.height_ratio)
 
 let type_of_alarm features alarm =
-  if StringSet.mem alarm (features.alarm_taint |> fst) then
+  if StringSet.mem alarm (features.alarm_alloc_size |> fst) then
+    (alarm_alloc_size, features.alarm_alloc_size |> snd)
+  else if StringSet.mem alarm (features.alarm_printf |> fst) then
+    (alarm_printf, features.alarm_printf |> snd)
+  else if StringSet.mem alarm (features.alarm_taint |> fst) then
     (alarm_taint, features.alarm_taint |> snd)
   else if StringSet.mem alarm (features.alarm_array_exp |> fst) then
     (alarm_array_exp, features.alarm_array_exp |> snd)
@@ -1202,23 +1222,14 @@ let improved env old_rule refined_rules =
           } )
     | None ->
         let weighted_envs = run_weights env old_rule refined_rules in
-        let {
-          Evaluation.total_iters;
-          diff_benchmarks;
-          improved_ratio;
-          env = evaluated_env;
-          _;
-        } =
+        let { Evaluation.total_iters; improved_ratio; env = evaluated_env; _ } =
           Evaluation.run_weights weighted_envs
         in
         if !is_debug then run_test evaluated_env;
         let ruleset_cache =
           RuleSetCache.add new_rules total_iters env.ruleset_cache
         in
-        if
-          List.assoc evaluated_env.current_v_curve.benchmark diff_benchmarks < 0
-          && total_iters < env.best_iters
-          && improved_ratio > !min_improved_ratio
+        if total_iters < env.best_iters && improved_ratio >= !min_improved_ratio
         then (
           let num_iters_lst = Evaluation.get_num_iters_lst evaluated_env in
           log "IMPROVED";
