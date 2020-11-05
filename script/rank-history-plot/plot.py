@@ -112,7 +112,7 @@ class Plotter:
                                   timestamp] = [true_alarm['Rank']]
 
             worklist = os.listdir(data_path)
-            num_work = len(worklist) - 1
+            num_work = len(worklist) - 2
             for work in range(num_work):
                 try:
                     df = pd.read_csv(os.path.join(data_path,
@@ -122,7 +122,7 @@ class Plotter:
                                      usecols=['Rank', 'Ground', 'Tuple'])
                 except IOError as e:
                     print('Error: ', e)
-                    print('Error: Check if ' + work + '.out exists in' +
+                    print('Error: Check if ' + str(work) + '.out exists in' +
                           data_path)
                     exit(1)
 
