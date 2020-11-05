@@ -24,10 +24,10 @@ taint_benchmarks=(
   "latex2rtf/2.1.1"
   "urjtag/0.8"
   "optipng/0.5.3"
-  "kilo/0.0.1"
+  #"kilo/0.0.1"
   "a2ps/4.14"
   "dicod/2.0"
-  "rrdtool/1.4.8"
+  #"rrdtool/1.4.8"
 )
 
 interval_benchmarks=(
