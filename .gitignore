@@ -33,6 +33,7 @@ history.txt
 learn.log
 rules
 learn-out*
+test-*
 
 marshal
 log.txt
