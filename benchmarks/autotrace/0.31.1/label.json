@@ -1,0 +1,41 @@
+[
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 323
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://www.cvedetails.com/cve/CVE-2017-9181"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 323
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://www.cvedetails.com/cve/CVE-2017-9181"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 323
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://www.cvedetails.com/cve/CVE-2017-9181"
+  }
+]
