@@ -72,14 +72,23 @@ def get_benchmarks():
     df = pd.read_csv(BENCH_TXT, header=0, usecols=['Name'])
     return df['Name'].to_list()
 
+def get_label(alarm, is_pretty):
+    if not is_pretty:
+        return alarm
+    elif 'baseline' in alarm:
+        return "Vanilla Bingo"
+    else:
+        return "BayeSmith"
+
 
 class Plotter:
-    def __init__(self, benchmark, timestamps):
+    def __init__(self, benchmark, timestamps, is_pretty):
         self.benchmark = benchmark
         self.timestamps = timestamps
         self.rank_history = {}
         self.data_path_dict = get_data_path_dict(benchmark, timestamps)
         self.img_path = get_img_path(timestamps)
+        self.is_pretty = is_pretty
         print('Info: ' + benchmark + ' is specified')
 
     def try_import_render_console(self):
@@ -150,8 +159,10 @@ class Plotter:
         # TODO: eye-soaring plot style
         plt.figure(figsize=(10, 10))
         for alarm, rank in self.rank_history.items():
-            plt.plot(rank, label=alarm)
-        plt.ylabel('rank')
+            label = get_label(alarm, self.is_pretty)
+            plt.plot(rank, label=label)
+        plt.ylabel('Rank')
+        plt.xlabel('User interaction')
         plt.legend(loc='upper right', borderaxespad=1, fancybox=True)
         if is_saving:
             if not fname:
@@ -178,6 +189,10 @@ if __name__ == "__main__":
                         '--show',
                         action='store_true',
                         help="render plot in local console")
+    parser.add_argument('-p',
+                        '--pretty',
+                        action='store_true',
+                        help="render pretty plot")
     parser.add_argument('--no-save',
                         action='store_true',
                         help="do not save the plot")
@@ -187,7 +202,7 @@ if __name__ == "__main__":
                         help="name of output file")
     args = parser.parse_args()
 
-    plotter = Plotter(args.benchmark, args.timestamp)
+    plotter = Plotter(args.benchmark, args.timestamp, args.pretty)
     plotter.transform_data()
     save = not args.no_save
     if save:
