@@ -37,5 +37,200 @@
     },
     "CVE": "CVE-2017-9181",
     "report": "https://www.cvedetails.com/cve/CVE-2017-9181"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "autotrace.c",
+      "line": 191
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "autotrace.c",
+      "line": 191
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "autotrace.c",
+      "line": 191
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 486
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 486
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 486
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 319
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 319
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 319
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 314
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 314
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 314
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 309
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 148
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 309
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
+  },
+  {
+    "project": "autotrace-0.31.1",
+    "source": {
+      "file": "input-bmp.c",
+      "line": 171
+    },
+    "sink": {
+      "file": "input-bmp.c",
+      "line": 309
+    },
+    "CVE": "CVE-2017-9181",
+    "report": "https://blogs.gentoo.org/ago/2017/05/20/autotrace-multiple-vulnerabilities-the-autotrace-nightmare/"
   }
 ]
