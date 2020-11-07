@@ -165,7 +165,8 @@ sparrow_options = {
     "a2ps": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "rrdtool": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "dicod": ["-taint", "-inline", "alloc", "-unsound_alloc"],
-    "autotrace" : ["-taint"]
+    "autotrace" : ["-taint"],
+    "sam2p" : ["-taint"]
 }
 
 

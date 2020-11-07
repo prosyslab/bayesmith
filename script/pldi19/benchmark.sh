@@ -10,6 +10,7 @@ taint_benchmarks=(
   "dicod/2.0"
   #"rrdtool/1.4.8"
   "autotrace/0.31.1"
+  "sam2p/0.49.4"
 )
 
 interval_benchmarks=(

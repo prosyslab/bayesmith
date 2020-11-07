@@ -1,0 +1,158 @@
+[
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 110
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 267
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 110
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 272
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 110
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 277
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 110
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 281
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 125
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 267
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 125
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 272
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 125
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 277
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 125
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 281
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 143
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 267
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 143
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 272
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 143
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 277
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  },
+  {
+    "project": "sam2p-0.49.4",
+    "source": {
+      "file": "input-bmp.ci",
+      "line": 143
+    },
+    "sink": {
+      "file": "input-bmp.ci",
+      "line": 281
+    },
+    "CVE": "CVE-2017-16663",
+    "report": "https://github.com/pts/sam2p/issues/16"
+  }
+]
