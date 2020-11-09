@@ -1,0 +1,41 @@
+[
+  {
+    "project": "gimp-2.6.7",
+    "source": {
+      "file": "bmp-read.c",
+      "line": 224
+    },
+    "sink": {
+      "file": "bmp-read.c",
+      "line": 630
+    },
+    "CVE": "CVE-2009-1570",
+    "report": "https://www.cvedetails.com/cve/CVE-2009-1570"
+  },
+  {
+    "project": "gimp-2.6.7",
+    "source": {
+      "file": "bmp-read.c",
+      "line": 251
+    },
+    "sink": {
+      "file": "bmp-read.c",
+      "line": 630
+    },
+    "CVE": "CVE-2009-1570",
+    "report": "https://www.cvedetails.com/cve/CVE-2009-1570"
+  },
+  {
+    "project": "gimp-2.6.7",
+    "source": {
+      "file": "bmp-read.c",
+      "line": 344
+    },
+    "sink": {
+      "file": "bmp-read.c",
+      "line": 630
+    },
+    "CVE": "CVE-2009-1570",
+    "report": "https://www.cvedetails.com/cve/CVE-2009-1570"
+  }
+]

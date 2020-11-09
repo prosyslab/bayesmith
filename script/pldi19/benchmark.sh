@@ -11,6 +11,7 @@ taint_benchmarks=(
   #"rrdtool/1.4.8"
   "autotrace/0.31.1"
   "sam2p/0.49.4"
+  "gimp/2.6.7"
 )
 
 interval_benchmarks=(

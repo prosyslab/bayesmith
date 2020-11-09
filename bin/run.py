@@ -166,7 +166,8 @@ sparrow_options = {
     "rrdtool": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "dicod": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "autotrace" : ["-taint"],
-    "sam2p" : ["-taint"]
+    "sam2p" : ["-taint"],
+    "gimp" : ["-taint"]
 }
 
 
