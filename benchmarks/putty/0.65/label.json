@@ -1,0 +1,12 @@
+[{
+    "project": "putty-0.65",
+    "source": {
+      "file": "uxstore.c",
+      "line": 105
+    },
+    "sink": {
+      "file": "misc.c",
+      "line": 422
+    }
+  }
+]
