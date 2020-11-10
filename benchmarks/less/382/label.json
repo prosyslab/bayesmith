@@ -1,0 +1,11 @@
+[{
+  "project": "less-382",
+  "source": {
+    "file": "decode.c",
+    "line": 537
+  },
+  "sink": {
+    "file": "charset.c",
+    "line": 334
+  }
+}]

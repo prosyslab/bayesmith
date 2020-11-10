@@ -167,7 +167,8 @@ sparrow_options = {
     "dicod": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "autotrace" : ["-taint"],
     "sam2p" : ["-taint"],
-    "gimp" : ["-taint"]
+    "gimp" : ["-taint"],
+    "less" : ["-taint"]
 }
 
 
