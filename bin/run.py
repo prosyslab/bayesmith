@@ -168,7 +168,7 @@ sparrow_options = {
     "autotrace" : ["-taint"],
     "sam2p" : ["-taint"],
     "gimp" : ["-taint"],
-    "less" : ["-taint"]
+    "less" : ["-taint"],
     "jhead" : ["-taint"]
 }
 
