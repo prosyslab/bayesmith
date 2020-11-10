@@ -1,0 +1,44 @@
+[
+  {
+    "project": "libming-0.4.8",
+    "source": {
+      "file": "read.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "parser.c",
+      "line": 3521
+    },
+    "CVE": "CVE-2018-5294",
+    "report": "https://www.cvedetails.com/cve/CVE-2018-5294",
+    "patch": "https://github.com/libming/libming/pull/100/files"
+  },
+  {
+    "project": "libming-0.4.8",
+    "source": {
+      "file": "read.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "parser.c",
+      "line": 3530
+    },
+    "CVE": "CVE-2018-5294",
+    "report": "https://www.cvedetails.com/cve/CVE-2018-5294",
+    "patch": "https://github.com/libming/libming/pull/100/files"
+  },
+  {
+    "project": "libming-0.4.8",
+    "source": {
+      "file": "read.c",
+      "line": 129
+    },
+    "sink": {
+      "file": "read.c",
+      "line": 227
+    },
+    "CVE": "CVE-2018-5294",
+    "report": "https://www.cvedetails.com/cve/CVE-2018-5294",
+    "patch": "https://github.com/libming/libming/pull/100/files"
+  }
+]

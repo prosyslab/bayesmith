@@ -32,6 +32,7 @@ taint_benchmarks=(
   "sam2p/0.49.4"
   "gimp/2.6.7"
   "less/382"
+  "libming/0.4.8"
 )
 
 interval_benchmarks=(

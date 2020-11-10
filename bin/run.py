@@ -169,7 +169,8 @@ sparrow_options = {
     "sam2p" : ["-taint"],
     "gimp" : ["-taint"],
     "less" : ["-taint"],
-    "jhead" : ["-taint"]
+    "jhead" : ["-taint"],
+    "libming" : ["-taint"]
 }
 
 
