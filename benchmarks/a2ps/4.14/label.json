@@ -7,7 +7,9 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   },
   {
     "project": "a2ps-4.14",
@@ -18,7 +20,9 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   },
   {
     "project": "a2ps-4.14",
@@ -29,7 +33,9 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   },
   {
     "project": "a2ps-4.14",
@@ -40,7 +46,9 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   },
   {
     "project": "a2ps-4.14",
@@ -51,7 +59,9 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   },
   {
     "project": "a2ps-4.14",
@@ -62,6 +72,8 @@
     "sink": {
       "file": "dstring.c",
       "line": 326
-    }
+    },
+    "CVE": "CVE-2015-8107",
+    "report": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8107"
   }
 ]
