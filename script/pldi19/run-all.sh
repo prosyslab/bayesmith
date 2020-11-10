@@ -31,6 +31,7 @@ taint_benchmarks=(
   "autotrace/0.31.1"
   "sam2p/0.49.4"
   "gimp/2.6.7"
+  "less/382"
 )
 
 interval_benchmarks=(
