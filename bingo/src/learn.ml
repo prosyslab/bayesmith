@@ -405,8 +405,7 @@ module Evaluation = struct
       in
       let num_changed = num_bench -. num_unchanged in
       let improved_ratio =
-        if num_changed = 0. then 1.
-        else num_improved /. num_changed
+        if num_changed = 0. then 1. else num_improved /. num_changed
       in
       log "%s" env.current_timestamp;
       log "# Last best iters: %d" env.best_iters;
@@ -1248,10 +1247,13 @@ let improved env old_rule refined_rules =
         let criteria_iters =
           if !use_baseline then !baseline_iters else env.best_iters
         in
-        if
-          total_iters < criteria_iters &&
-          improved_ratio >= !min_improved_ratio
-        then (
+        let compare_iter =
+          match !analysis_type with
+          | "interval" -> total_iters < criteria_iters
+          | "taint" -> total_iters <= criteria_iters
+          | t -> failwith ("Unsupported analysis type: " ^ t)
+        in
+        if compare_iter && improved_ratio >= !min_improved_ratio then (
           let num_iters_lst = Evaluation.get_num_iters_lst evaluated_env in
           log "IMPROVED";
           log "TIMESTAMP-WEIGHT: %s" evaluated_env.current_timestamp;
