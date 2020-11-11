@@ -14,6 +14,7 @@ taint_benchmarks=(
   "gimp/2.6.7"
   "less/382"
   "libming/0.4.8"
+  "putty/0.65"
 )
 
 interval_benchmarks=(

@@ -170,7 +170,8 @@ sparrow_options = {
     "gimp" : ["-taint"],
     "less" : ["-taint"],
     "jhead" : ["-taint"],
-    "libming" : ["-taint"]
+    "libming" : ["-taint"],
+    "putty" : ["-taint"]
 }
 
 
