@@ -125,5 +125,9 @@ let fold_rules rules =
    DUPath(x,y) :- FalseCond(x), FalseBranch(x,z), DUPath(z,y).
    Alarm(x,y)  :- DUPath(x,y), SparrowAlarm(x,y).
 *)
+let integer_overflow_rules_baseline =
+  fold_rules (r_base_cases @ [ r_true_cond; r_false_cond; r_path; r_alarm ])
+
+(* Modify this rule for manual rule generation *)
 let integer_overflow_rules =
   fold_rules (r_base_cases @ [ r_true_cond; r_false_cond; r_path; r_alarm ])

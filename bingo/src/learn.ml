@@ -29,6 +29,12 @@ let is_parallel = ref false
 
 let is_test = ref false
 
+let use_baseline = ref false
+
+let baseline_iters = ref (-1)
+
+let baseline_iters_lst = ref []
+
 (* Default constants *)
 let prob = 0.99
 
@@ -176,11 +182,15 @@ let interval_benchmarks =
 let taint_benchmarks =
   [
     "a2ps/4.14";
-    "dicod/2.0";
-    "latex2rtf/2.1.1";
     "optipng/0.5.3";
     "shntool/3.0.5";
     "urjtag/0.8";
+    "autotrace/0.31.1";
+    "sam2p/0.49.4";
+    "latex2rtf/2.1.1";
+    "jhead/3.0.0";
+    "putty/0.65";
+    "libming/0.4.8";
   ]
 
 let get_benchmark_pool () =
@@ -344,6 +354,9 @@ module Evaluation = struct
     let num_bench = List.length env.benchmarks |> float_of_int in
     let current_num_iters_lst = get_num_iters_lst env in
     let total_iters = List.fold_left ( + ) 0 current_num_iters_lst in
+    let criteria_lst =
+      if !use_baseline then !baseline_iters_lst else env.best_iters_lst
+    in
     if env.best_iters_lst = [] then (
       log "# Current total iters: %d" total_iters;
       {
@@ -359,7 +372,7 @@ module Evaluation = struct
       let diff_lst =
         List.fold_left2
           (fun acc a b -> (b - a) :: acc)
-          [] env.best_iters_lst current_num_iters_lst
+          [] criteria_lst current_num_iters_lst
       in
       let diff_sum = List.fold_left ( + ) 0 diff_lst in
       let mean = float_of_int diff_sum /. num_bench in
@@ -380,18 +393,21 @@ module Evaluation = struct
         | _ -> []
       in
       let diff_benchmarks =
-        loop env.benchmarks env.best_iters_lst current_num_iters_lst
+        loop env.benchmarks criteria_lst current_num_iters_lst
       in
       let num_improved =
-        List.fold_left
-          (fun acc (_, d) -> if d < 0 then acc +. 1. else acc)
-          0. diff_benchmarks
-      in
-      let num_changed =
-        List.filter (fun (_, d) -> d <> 0) diff_benchmarks
+        List.filter (fun (_, d) -> d < 0) diff_benchmarks
         |> List.length |> float_of_int
       in
-      let improved_ratio = num_improved /. num_changed in
+      let num_unchanged =
+        List.filter (fun (_, d) -> d = 0) diff_benchmarks
+        |> List.length |> float_of_int
+      in
+      let num_changed = num_bench -. num_unchanged in
+      let improved_ratio =
+        if num_changed = 0. then 1.
+        else num_improved /. num_changed
+      in
       log "%s" env.current_timestamp;
       log "# Last best iters: %d" env.best_iters;
       log "# Current total iters: %d" total_iters;
@@ -1229,7 +1245,12 @@ let improved env old_rule refined_rules =
         let ruleset_cache =
           RuleSetCache.add new_rules total_iters env.ruleset_cache
         in
-        if total_iters < env.best_iters && improved_ratio >= !min_improved_ratio
+        let criteria_iters =
+          if !use_baseline then !baseline_iters else env.best_iters
+        in
+        if
+          total_iters < criteria_iters &&
+          improved_ratio >= !min_improved_ratio
         then (
           let num_iters_lst = Evaluation.get_num_iters_lst evaluated_env in
           log "IMPROVED";
@@ -1399,14 +1420,25 @@ let refine_rule env features alarm_map feature_map grule target_rule =
     let path_rule_boxes =
       boxed_rule |> get_visible_rule |> Datalog.Rule.boxes_in_rule
     in
+    let is_cond =
+      boxed_rule.tail
+      |> List.exists (fun t ->
+             Str.string_match (Str.regexp ".*eCond.*") t.Tuple.name 0)
+    in
     if path_rule_boxes = [] then (
       (* Case P1 : Base rule, i.e. no refinement has been done *)
-      log "Case P1";
-      let target_tuple = List.nth grule.premises 0 in
+      if is_cond then log "Case P1 - Cond" else log "Case P1";
+      let tuple_ind = if is_cond then 2 else 0 in
+      let target_tuple = List.nth grule.premises tuple_ind in
+      let target_node_ind = List.length target_tuple.elements - 1 in
       let target_tuple_str = GTuple.elements_to_string target_tuple in
       log "target %s" target_tuple_str;
-      let target_node_name = GTuple.nth_elt_to_string 1 target_tuple in
-      let target_v = List.nth (List.nth boxed_rule.tail 0).vars 1 in
+      let target_node_name =
+        GTuple.nth_elt_to_string target_node_ind target_tuple
+      in
+      let target_v =
+        List.nth (List.nth boxed_rule.tail tuple_ind).vars target_node_ind
+      in
       let target_type, arity =
         get_non_alarm_tuple_type_and_arity features target_node_name
       in
@@ -1533,6 +1565,9 @@ let opts =
     ( "-test",
       Arg.Set is_test,
       "Run test on given benchmark, dl and rule_prob files" );
+    ( "-use_baseline",
+      Arg.Set use_baseline,
+      "Set baseline as evaluation criteria" );
   ]
 
 (* TODO *)
@@ -1560,6 +1595,21 @@ let initialize () =
   log_file := Filename.concat !out_dir "learn.log" |> open_out |> Option.some;
   log_formatter := Option.map F.formatter_of_out_channel !log_file
 
+let set_baseline base_rules =
+  log "Load baseline statistics";
+  let base_env =
+    update_current_timestamp
+      {
+        empty_env with
+        current_rules = base_rules;
+        benchmarks = leave_one_out !target;
+      }
+  in
+  run_all base_env;
+  baseline_iters_lst := Evaluation.get_num_iters_lst base_env;
+  baseline_iters := List.fold_left ( + ) 0 !baseline_iters_lst;
+  log "TOTAL BASELINE ITERS: %d" !baseline_iters
+
 let finalize () =
   match !log_file with Some log_file -> close_out log_file | None -> ()
 
@@ -1571,6 +1621,7 @@ let report env =
     env.history
 
 let main () =
+  Random.self_init ();
   Arg.parse opts (fun x -> target := x) "";
   initialize ();
   log "Chosen program: %s" !target;
@@ -1589,6 +1640,14 @@ let main () =
       benchmarks = leave_one_out !target;
     }
   in
+  let baseline_rules =
+    if !analysis_type = "interval" then
+      Buffer_rules.buffer_overflow_rules_baseline
+    else if !analysis_type = "taint" then
+      Integer_rules.integer_overflow_rules_baseline
+    else failwith "Unknown analysis type"
+  in
+  set_baseline baseline_rules;
   if !is_test then (
     if !dl_from = "" then
       failwith "One must at least specify a dl file to run test";

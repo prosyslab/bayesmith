@@ -133,5 +133,9 @@ let fold_rules rules =
    DUPath(x,y) :- DUPath(x,z), FalseCond(z), FalseBranch(z,y).
    Alarm(x,y)  :- DUPath(x,y), SparrowAlarm(x,y).
 *)
+let buffer_overflow_rules_baseline =
+  fold_rules (r_base_cases @ [ r_true_cond; r_false_cond; r_path; r_alarm ])
+
+(* Modify this rule for manual rule generation *)
 let buffer_overflow_rules =
   fold_rules (r_base_cases @ [ r_true_cond; r_false_cond; r_path; r_alarm ])
