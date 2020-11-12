@@ -171,7 +171,8 @@ sparrow_options = {
     "less" : ["-taint"],
     "jhead" : ["-taint"],
     "libming" : ["-taint"],
-    "putty" : ["-taint"]
+    "putty" : ["-taint"],
+    "sdop" : ["-taint"]
 }
 
 

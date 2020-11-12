@@ -15,6 +15,7 @@ taint_benchmarks=(
   "less/382"
   "libming/0.4.8"
   "putty/0.65"
+  "sdop/0.61"
 )
 
 interval_benchmarks=(

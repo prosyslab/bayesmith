@@ -189,7 +189,7 @@ let taint_benchmarks =
     "sam2p/0.49.4";
     "latex2rtf/2.1.1";
     "jhead/3.0.0";
-    "putty/0.65";
+    "sdop/0.61";
     "libming/0.4.8";
   ]
 
