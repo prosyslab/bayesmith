@@ -33,6 +33,7 @@ history.txt
 learn.log
 rules
 learn-out*
+weight-learn-out*
 test-*
 
 marshal
