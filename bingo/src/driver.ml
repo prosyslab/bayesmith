@@ -55,6 +55,7 @@ let cmd_query env tuple =
 let cmd_observe env tuple boolean =
   let cmd = F.sprintf "O %d %b" (BNetDict.find tuple env.bnet_dict) boolean in
   exec_wrapper_command env.ic env.oc cmd |> ignore;
+  P.printf "%s\n" cmd;
   { env with labelled_tuples = BNetDict.add tuple boolean env.labelled_tuples }
 
 let int_of_bool = function true -> 1 | false -> -1
@@ -167,6 +168,10 @@ let cmd_carousel env problem_dir =
   in
   loop (Unix.time ()) 0 0 env
 
+let cmd_factor_marginal env clause_idx val_idx =
+  let cmd = F.sprintf "FQ %s %s" clause_idx val_idx in
+  exec_wrapper_command env.ic env.oc cmd |> float_of_string |> Option.some
+
 let repl env cmd =
   let components = Str.split (Str.regexp "[ \t]+") cmd in
   match components with
@@ -195,6 +200,12 @@ let repl env cmd =
   | [ "AC"; problem_dir ] ->
       cmd_carousel env problem_dir;
       env
+  | [ "FQ"; clause_idx; val_idx ] -> (
+      match cmd_factor_marginal env clause_idx val_idx with
+      | Some prob ->
+          P.printf "%f\n" prob;
+          env
+      | None -> env )
   | [] -> env
   | _ ->
       P.eprintf "Invalid command\n";
