@@ -1502,11 +1502,19 @@ let find_candidates vc =
     |> Fun.flip Filename.concat "node.json"
   in
   let bnet = BNet.build named_cons node in
-  try
-    BNet.compute_common_ancestor bnet
-      (BNet.Node.of_tuple vc.VCurve.false_alarm)
-      (BNet.Node.of_tuple vc.VCurve.true_alarm)
-    |> snd
+  let a1 =
+    match !analysis_type with
+    | "interval" -> BNet.Node.of_tuple vc.VCurve.false_alarm
+    | "taint" -> BNet.Node.of_tuple vc.VCurve.true_alarm
+    | t -> failwith ("Unsupported analysis type: " ^ t)
+  in
+  let a2 =
+    match !analysis_type with
+    | "interval" -> BNet.Node.of_tuple vc.VCurve.true_alarm
+    | "taint" -> BNet.Node.of_tuple vc.VCurve.false_alarm
+    | t -> failwith ("Unsupported analysis type: " ^ t)
+  in
+  try BNet.compute_common_ancestor bnet a1 a2 |> snd
   with BNet.Best_effort_not_found ->
     log "COMMON ANCESTOR NOT FOUND";
     []
