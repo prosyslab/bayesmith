@@ -44,7 +44,9 @@ BINGO_DIR = os.path.join(PROJECT_HOME, 'bingo')
 LIBDAI_HOME = os.path.join(PROJECT_HOME, "libdai")
 BINGO_BIN = os.path.join(LIBDAI_HOME, "bingo")
 
-outdir = "weight-learn-out"
+analysis_type = sys.argv[1]
+target_program = sys.argv[2]
+outdir = "weight-learn-out-" + target_program
 os.makedirs(outdir, exist_ok=True)
 logging.basicConfig(level=logging.INFO, \
                     format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s", \
@@ -54,8 +56,6 @@ logging.basicConfig(level=logging.INFO, \
 ########################################################################################################################
 # 1. Read input
 
-analysis_type = sys.argv[1]
-target_program = sys.argv[2]
 tolerance = 1e-6
 probMax = 0.999
 assert 0 < probMax and probMax < 1
@@ -69,13 +69,18 @@ interval_benchmarks = [
 taint_benchmarks = [
     "a2ps/4.14", "optipng/0.5.3", "shntool/3.0.5", "urjtag/0.8",
     "autotrace/0.31.1", "sam2p/0.49.4", "latex2rtf/2.1.1", "jhead/3.0.0",
-    "putty/0.65", "libming/0.4.8"
+    "sdop/0.61"
 ]
 
 if analysis_type == "interval":
     benchmarks = interval_benchmarks
-else:
+elif analysis_type == "taint":
     benchmarks = taint_benchmarks
+else:
+    print("Unsupported analysis type: " + analysis_type)
+    exit(1)
+
+benchmarks = [ target_program not in b for b in benchmarks ]
 
 projects = [ { 'name': p.split('/')[0], \
                'path': os.path.join(BENCHMARK_DIR,p,'sparrow-out', analysis_type) } \
