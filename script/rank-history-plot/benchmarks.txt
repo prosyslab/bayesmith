@@ -20,3 +20,4 @@ sam2p,0.49.4
 sdop,0.61
 jhead,3.0.0
 a2ps,4.14
+fribidi,1.0.7
