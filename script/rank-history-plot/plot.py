@@ -77,6 +77,21 @@ def get_alarm_path(benchmark):
         print('Error: Make sure your configuration succeeds')
         exit(1)
 
+def get_bingo_stat_path(benchmark, timestamp):
+    version, atyp = get_benchmark_info(benchmark)
+    try:
+        with open(FACTS_TXT, 'r') as f:
+            benchmarks_dir = f.read().strip()
+            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
+                                     'sparrow-out', atyp,
+                                     'bingo_stats-' + timestamp + '.txt')
+            return alarm_path
+    except FileNotFoundError as e:
+        print('Error: ', e)
+        print('Error: Check if facts.txt exists')
+        print('Error: Make sure your configuration succeeds')
+        exit(1)
+
 
 def get_num_alarms(benchmark):
     txt_path = get_alarm_path(benchmark)
@@ -113,7 +128,7 @@ class Plotter:
         self.img_path = get_img_path(timestamps)
         self.is_pretty = is_pretty
         print('[Info] ' + benchmark + ' is specified')
-        print('[Info] #Alarms: ' + str(self.num_alarms))
+        print('[Info] # Alarms: ' + str(self.num_alarms))
 
     def try_import_render_console(self):
         try:
@@ -165,6 +180,13 @@ class Plotter:
                     self.rank_history[true_alarm['Tuple'] + '@' +
                                       timestamp] += [true_alarm['Rank']]
 
+    def compute_avg_bingo_feedbk_time(self):
+        for timestamp in self.timestamps:
+            bingo_stat_path = get_bingo_stat_path(self.benchmark, timestamp)
+            df = pd.read_csv(bingo_stat_path, sep='\t', header=0, usecols=['Time(s)'])
+            print("[Info] Avg Bingo feedback time at " + timestamp + ":")
+            print(df.mean())
+
     def make_dir(self):
         """Make a directory where plots are being saved.
         """
@@ -190,7 +212,7 @@ class Plotter:
                     ts = alarm.split('@')[-1]
                     dic[ts] += 1
         for ts, num_vc in dic.items():
-            print("[Info] #VC in " + ts + ": " + str(num_vc))
+            print("[Info] # VC in " + ts + ": " + str(num_vc))
 
     def render_or(self, is_saving=True, fname=None):
         """Render plot by traversing over history of each alarm.
@@ -251,6 +273,7 @@ if __name__ == "__main__":
     else:
         print('[Info] no-save option is set')
     plotter.count_vc()
+    plotter.compute_avg_bingo_feedbk_time()
     plotter.render_or(save, args.output)
     if args.show:
         print('[Info] show option is set')
