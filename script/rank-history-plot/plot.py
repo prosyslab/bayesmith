@@ -11,6 +11,7 @@ import json
 BASE_DIR = os.path.dirname(__file__)
 FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
 BENCH_TXT = os.path.join(BASE_DIR, "benchmarks.txt")
+MIN_V = 0.1
 
 
 def get_benchmark_info(benchmark):
@@ -61,6 +62,27 @@ def get_data_path_dict(benchmark, timestamps):
     return data_path_dict
 
 
+def get_alarm_path(benchmark):
+    version, atyp = get_benchmark_info(benchmark)
+    try:
+        with open(FACTS_TXT, 'r') as f:
+            benchmarks_dir = f.read().strip()
+            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
+                                     'sparrow-out', atyp,
+                                     'bnet-baseline', 'Alarm.txt')
+            return alarm_path
+    except FileNotFoundError as e:
+        print('Error: ', e)
+        print('Error: Check if facts.txt exists')
+        print('Error: Make sure your configuration succeeds')
+        exit(1)
+
+
+def get_num_alarms(benchmark):
+    txt_path = get_alarm_path(benchmark)
+    with open(txt_path, 'r') as f:
+        return len(f.readlines())
+
 def get_img_path(timestamps):
     stamp = "+".join(timestamps)
     return os.path.join(BASE_DIR, "images-" + stamp)
@@ -87,9 +109,11 @@ class Plotter:
         self.timestamps = timestamps
         self.rank_history = {}
         self.data_path_dict = get_data_path_dict(benchmark, timestamps)
+        self.num_alarms = get_num_alarms(benchmark)
         self.img_path = get_img_path(timestamps)
         self.is_pretty = is_pretty
-        print('Info: ' + benchmark + ' is specified')
+        print('[Info] ' + benchmark + ' is specified')
+        print('[Info] #Alarms: ' + str(self.num_alarms))
 
     def try_import_render_console(self):
         try:
@@ -117,7 +141,7 @@ class Plotter:
             filtered_df = df[df.Ground == 'TrueGround'].reset_index(
                 drop=True)[['Rank', 'Tuple']]
             for _, true_alarm in filtered_df.iterrows():
-                self.rank_history[true_alarm['Tuple'] + '-' +
+                self.rank_history[true_alarm['Tuple'] + '@' +
                                   timestamp] = [true_alarm['Rank']]
 
             worklist = os.listdir(data_path)
@@ -138,7 +162,7 @@ class Plotter:
                 filtered_df = df[df.Ground == 'TrueGround'].reset_index(
                     drop=True)[['Rank', 'Tuple']]
                 for _, true_alarm in filtered_df.iterrows():
-                    self.rank_history[true_alarm['Tuple'] + '-' +
+                    self.rank_history[true_alarm['Tuple'] + '@' +
                                       timestamp] += [true_alarm['Rank']]
 
     def make_dir(self):
@@ -151,12 +175,28 @@ class Plotter:
                 print('Error: ', e)
                 exit(1)
 
+    
+    def count_vc(self):
+        dic = {}
+        for alarm, _ in self.rank_history.items():
+            ts = alarm.split('@')[-1]
+            dic[ts] = 0
+        for alarm, rank in self.rank_history.items():
+            temp = 0
+            for i in range(len(rank) - 1):
+                diff = rank[i + 1] - rank[i]
+                vc_size = diff / float(self.num_alarms)
+                if vc_size > MIN_V:
+                    ts = alarm.split('@')[-1]
+                    dic[ts] += 1
+        for ts, num_vc in dic.items():
+            print("[Info] #VC in " + ts + ": " + str(num_vc))
+
     def render_or(self, is_saving=True, fname=None):
         """Render plot by traversing over history of each alarm.
 
         It takes save option into account on demand.
         """
-        # TODO: eye-soaring plot style
         plt.figure(figsize=(10, 10))
         for alarm, rank in self.rank_history.items():
             marker, label = get_label(alarm, self.is_pretty)
@@ -209,8 +249,9 @@ if __name__ == "__main__":
     if save:
         plotter.make_dir()
     else:
-        print('Info: no-save option is set')
+        print('[Info] no-save option is set')
+    plotter.count_vc()
     plotter.render_or(save, args.output)
     if args.show:
-        print('Info: show option is set')
+        print('[Info] show option is set')
         plotter.show()
