@@ -190,7 +190,6 @@ let taint_benchmarks =
     "latex2rtf/2.1.1";
     "jhead/3.0.0";
     "sdop/0.61";
-    "libming/0.4.8";
   ]
 
 let get_benchmark_pool () =
@@ -1247,12 +1246,7 @@ let improved env old_rule refined_rules =
         let criteria_iters =
           if !use_baseline then !baseline_iters else env.best_iters
         in
-        let compare_iter =
-          match !analysis_type with
-          | "interval" -> total_iters < criteria_iters
-          | "taint" -> total_iters <= criteria_iters
-          | t -> failwith ("Unsupported analysis type: " ^ t)
-        in
+        let compare_iter = total_iters < criteria_iters in
         if compare_iter && improved_ratio >= !min_improved_ratio then (
           let num_iters_lst = Evaluation.get_num_iters_lst evaluated_env in
           log "IMPROVED";
