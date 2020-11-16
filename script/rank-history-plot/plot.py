@@ -74,11 +74,11 @@ def get_benchmarks():
 
 def get_label(alarm, is_pretty):
     if not is_pretty:
-        return alarm
+        return "", alarm
     elif 'baseline' in alarm:
-        return "Vanilla Bingo"
+        return ".", "Vanilla Bingo"
     else:
-        return "BayeSmith"
+        return "D", "BayeSmith"
 
 
 class Plotter:
@@ -159,11 +159,12 @@ class Plotter:
         # TODO: eye-soaring plot style
         plt.figure(figsize=(10, 10))
         for alarm, rank in self.rank_history.items():
-            label = get_label(alarm, self.is_pretty)
-            plt.plot(rank, label=label)
+            marker, label = get_label(alarm, self.is_pretty)
+            plt.plot(rank, marker=marker, label=label)
         plt.ylabel('Rank')
         plt.xlabel('User interaction')
         plt.legend(loc='upper right', borderaxespad=1, fancybox=True)
+        plt.tight_layout()
         if is_saving:
             if not fname:
                 fname = self.benchmark + '.png'

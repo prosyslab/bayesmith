@@ -17,3 +17,6 @@ patch,2.7.1
 gzip,1.2.4a
 autotrace,0.31.1
 sam2p,0.49.4
+sdop,0.61
+jhead,3.0.0
+a2ps,4.14
