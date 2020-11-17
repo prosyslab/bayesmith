@@ -98,8 +98,7 @@ let cmd_print env outfile =
 
 let cmd_exit env =
   output_string env.oc "exit\n";
-  flush_all ();
-  exit 0
+  flush_all ()
 
 let get_inversion_count env alarms =
   List.fold_left
@@ -177,7 +176,7 @@ let repl env cmd =
   match components with
   | [ "BP" ] ->
       cmd_belief_propagation env |> ignore;
-      env
+      Some env
   | [ "BP"; tolerance; min_iters; max_iters; hist_length ] ->
       let tolerance = float_of_string tolerance in
       let min_iters = int_of_string min_iters in
@@ -185,40 +184,44 @@ let repl env cmd =
       let hist_length = int_of_string hist_length in
       cmd_belief_propagation ~tolerance ~min_iters ~max_iters ~hist_length env
       |> ignore;
-      env
+      Some env
   | [ "Q"; tuple ] -> (
       match cmd_query env tuple with
       | Some prob ->
           P.printf "%s %f\n" tuple prob;
-          env
-      | None -> env )
-  | [ "O"; tuple; boolean ] -> cmd_observe env tuple (bool_of_string boolean)
+          Some env
+      | None -> Some env )
+  | [ "O"; tuple; boolean ] ->
+      cmd_observe env tuple (bool_of_string boolean) |> Option.some
   | [ "P"; outfile ] ->
       cmd_print env outfile;
-      env
-  | [ "exit" ] -> cmd_exit env
+      Some env
+  | [ "exit" ] ->
+      cmd_exit env;
+      None
   | [ "AC"; problem_dir ] ->
       cmd_carousel env problem_dir;
-      env
+      cmd_exit env;
+      None
   | [ "FQ"; clause_idx; val_idx ] -> (
       match cmd_factor_marginal env clause_idx val_idx with
       | Some prob ->
           P.printf "%f\n" prob;
-          env
-      | None -> env )
-  | [] -> env
+          Some env
+      | None -> Some env )
+  | [] -> Some env
   | _ ->
       P.eprintf "Invalid command\n";
-      env
+      Some env
 
 let rec user_input prompt env cb =
   match LNoise.linenoise prompt with
   | None -> ()
-  | Some v ->
+  | Some v -> (
       let env = repl env v in
       flush_all ();
       cb v;
-      user_input prompt env cb
+      match env with Some env -> user_input prompt env cb | None -> () )
   | exception Sys.Break -> cmd_exit env
 
 let populate_bnet dict_file_name =
@@ -302,6 +305,7 @@ let main argv =
       (fun from_user ->
         LNoise.history_add from_user |> ignore;
         LNoise.history_save ~filename:"history.txt" |> ignore)
-      |> user_input "bingo> " env
+      |> user_input "bingo> " env;
+      Unix.wait () |> ignore
 
 let _ = main Sys.argv
