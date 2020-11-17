@@ -1645,20 +1645,21 @@ let main () =
       benchmarks = leave_one_out !target;
     }
   in
-  let baseline_rules =
-    if !analysis_type = "interval" then
-      Buffer_rules.buffer_overflow_rules_baseline
-    else if !analysis_type = "taint" then
-      Integer_rules.integer_overflow_rules_baseline
-    else failwith "Unknown analysis type"
-  in
-  set_baseline baseline_rules;
   if !is_test then (
     if !dl_from = "" then
       failwith "One must at least specify a dl file to run test";
     let test_env = update_current_timestamp initial_env in
     run_test test_env )
   else (
+    ( if !use_baseline then
+      let baseline_rules =
+        if !analysis_type = "interval" then
+          Buffer_rules.buffer_overflow_rules_baseline
+        else if !analysis_type = "taint" then
+          Integer_rules.integer_overflow_rules_baseline
+        else failwith "Unknown analysis type"
+      in
+      set_baseline baseline_rules );
     if !reuse then log "Skip baseline and reuse existing result."
     else run_all initial_env;
     let { Evaluation.total_iters; _ } = Evaluation.run initial_env in
