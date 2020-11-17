@@ -165,14 +165,16 @@ sparrow_options = {
     "a2ps": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "rrdtool": ["-taint", "-inline", "alloc", "-unsound_alloc"],
     "dicod": ["-taint", "-inline", "alloc", "-unsound_alloc"],
-    "autotrace" : ["-taint"],
-    "sam2p" : ["-taint"],
-    "gimp" : ["-taint"],
-    "less" : ["-taint"],
-    "jhead" : ["-taint"],
-    "libming" : ["-taint"],
-    "putty" : ["-taint"],
-    "sdop" : ["-taint"]
+    "autotrace": ["-taint"],
+    "sam2p": ["-taint"],
+    "gimp": ["-taint"],
+    "less": ["-taint"],
+    "jhead": ["-taint"],
+    "libming": ["-taint"],
+    "putty": ["-taint"],
+    "sdop": ["-taint"],
+    "man": ["-inline", "alloc"],
+    "bzip2": ["-inline", "alloc"]
 }
 
 
