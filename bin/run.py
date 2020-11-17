@@ -274,7 +274,7 @@ def run_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
 
 def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
               suffix, fg_file):
-    print("Running Bingo")
+    print("Running Bingo (em-train)")
     command = [
         os.path.join(BINGO_DIR, "generate-ground-truth.py"), benchmark_dir,
         analysis_type, bnet_dir
@@ -292,7 +292,7 @@ def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_d
 
 def run_em_test_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
               suffix):
-    print("Running Bingo")
+    print("Running Bingo (em-test)")
     command = [
         os.path.join(BINGO_DIR, "generate-ground-truth.py"), benchmark_dir,
         analysis_type, bnet_dir

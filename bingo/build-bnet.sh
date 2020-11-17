@@ -50,18 +50,18 @@ IS_EM=$5
 RULE_PROB_FILE=$6
 EM_TEST="em-test"
 
+mkdir -p $PROGRAM_PATH/$BNET
+
+export AUGMENT="noaugment"
+
+BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 if [ "$IS_EM" = "$EM_TEST" ]; then
   $BINGO_DIR/bnet2fg.py $RULE_PROB_FILE 0.99 \
     <$PROGRAM_PATH/bnet-baseline/named-bnet.out \
     >$PROGRAM_PATH/${BNET}/factor-graph.fg \
     2>$PROGRAM_PATH/${BNET}/bnet2fg.log
 else
-  mkdir -p $PROGRAM_PATH/$BNET
-
-  export AUGMENT="noaugment"
-
-  BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
   $BINGO_DIR/prune-cons/prune-cons $AUGMENT $OP_TUPLE_FILENAME \
     <$PROGRAM_PATH/${BNET}/named_cons_all.txt \
     >$PROGRAM_PATH/${BNET}/named_cons_all.txt.pruned \
