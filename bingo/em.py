@@ -62,7 +62,7 @@ assert 0 < probMax and probMax < 1
 
 interval_benchmarks = [
     "wget/1.12", "readelf/2.24", "grep/2.19", "sed/4.3", "sort/7.2",
-    "tar/1.28", "cflow/1.5", "libtasn1/4.3", "bc/1.06", "fribidi/1.0.7",
+    "tar/1.28", "cflow/1.5", "bc/1.06", "fribidi/1.0.7",
     "patch/2.7.1", "gzip/1.2.4a"
 ]
 
