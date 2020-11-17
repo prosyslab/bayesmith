@@ -46,43 +46,53 @@ export OP_TUPLE_FILENAME=$2
 export BNET=$3
 export EPS=$4
 export PYTHONHASHSEED=0 # to make python set deterministic
+IS_EM=$5
+RULE_PROB_FILE=$6
+EM_TEST="em-test"
 
-mkdir -p $PROGRAM_PATH/$BNET
+if [ "$IS_EM" = "$EM_TEST" ]; then
+  $BINGO_DIR/bnet2fg.py $RULE_PROB_FILE 0.99 \
+    <$PROGRAM_PATH/bnet-baseline/named-bnet.out \
+    >$PROGRAM_PATH/${BNET}/factor-graph.fg \
+    2>$PROGRAM_PATH/${BNET}/bnet2fg.log
+else
+  mkdir -p $PROGRAM_PATH/$BNET
 
-export AUGMENT="noaugment"
+  export AUGMENT="noaugment"
 
-BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-$BINGO_DIR/prune-cons/prune-cons $AUGMENT $OP_TUPLE_FILENAME \
-  <$PROGRAM_PATH/${BNET}/named_cons_all.txt \
-  >$PROGRAM_PATH/${BNET}/named_cons_all.txt.pruned \
-  2>$PROGRAM_PATH/${BNET}/prune-cons.log
+  $BINGO_DIR/prune-cons/prune-cons $AUGMENT $OP_TUPLE_FILENAME \
+    <$PROGRAM_PATH/${BNET}/named_cons_all.txt \
+    >$PROGRAM_PATH/${BNET}/named_cons_all.txt.pruned \
+    2>$PROGRAM_PATH/${BNET}/prune-cons.log
 
-$BINGO_DIR/derive-edb.py \
-  <$PROGRAM_PATH/${BNET}/named_cons_all.txt.pruned \
-  >$PROGRAM_PATH/${BNET}/named_cons_all.txt.edbderived \
-  2>$PROGRAM_PATH/${BNET}/derive-edb.log
+  $BINGO_DIR/derive-edb.py \
+    <$PROGRAM_PATH/${BNET}/named_cons_all.txt.pruned \
+    >$PROGRAM_PATH/${BNET}/named_cons_all.txt.edbderived \
+    2>$PROGRAM_PATH/${BNET}/derive-edb.log
 
-$BINGO_DIR/elide-edb.py \
-  <$PROGRAM_PATH/${BNET}/named_cons_all.txt.edbderived \
-  >$PROGRAM_PATH/${BNET}/named_cons_all.txt.ep \
-  2>$PROGRAM_PATH/${BNET}/elide-edb.log
+  $BINGO_DIR/elide-edb.py \
+    <$PROGRAM_PATH/${BNET}/named_cons_all.txt.edbderived \
+    >$PROGRAM_PATH/${BNET}/named_cons_all.txt.ep \
+    2>$PROGRAM_PATH/${BNET}/elide-edb.log
 
-$BINGO_DIR/compress-cons-all.py \
-  $PROGRAM_PATH/${BNET}/named_cons_all.txt.ep \
-  $PROGRAM_PATH/$BNET/rule-prob.txt \
-  0.99 \
-  $OP_TUPLE_FILENAME \
-  $PROGRAM_PATH/${BNET}/new-rule-prob.txt \
-  $PROGRAM_PATH/${BNET}/named_cons_all.txt.cep \
-  2>$PROGRAM_PATH/${BNET}/compress-cons-all.log
+  $BINGO_DIR/compress-cons-all.py \
+    $PROGRAM_PATH/${BNET}/named_cons_all.txt.ep \
+    $PROGRAM_PATH/$BNET/rule-prob.txt \
+    0.99 \
+    $OP_TUPLE_FILENAME \
+    $PROGRAM_PATH/${BNET}/new-rule-prob.txt \
+    $PROGRAM_PATH/${BNET}/named_cons_all.txt.cep \
+    2>$PROGRAM_PATH/${BNET}/compress-cons-all.log
 
-$BINGO_DIR/cons_all2bnet.py $PROGRAM_PATH/${BNET}/bnet-dict.out narrowand narrowor \
-  <$PROGRAM_PATH/${BNET}/named_cons_all.txt.cep \
-  >$PROGRAM_PATH/${BNET}/named-bnet.out \
-  2>$PROGRAM_PATH/${BNET}/cons_all2bnet.log
+  $BINGO_DIR/cons_all2bnet.py $PROGRAM_PATH/${BNET}/bnet-dict.out narrowand narrowor \
+    <$PROGRAM_PATH/${BNET}/named_cons_all.txt.cep \
+    >$PROGRAM_PATH/${BNET}/named-bnet.out \
+    2>$PROGRAM_PATH/${BNET}/cons_all2bnet.log
 
-$BINGO_DIR/bnet2fg.py $PROGRAM_PATH/${BNET}/new-rule-prob.txt 0.99 \
-  <$PROGRAM_PATH/${BNET}/named-bnet.out \
-  >$PROGRAM_PATH/${BNET}/factor-graph.fg \
-  2>$PROGRAM_PATH/${BNET}/bnet2fg.log
+  $BINGO_DIR/bnet2fg.py $PROGRAM_PATH/${BNET}/new-rule-prob.txt 0.99 \
+    <$PROGRAM_PATH/${BNET}/named-bnet.out \
+    >$PROGRAM_PATH/${BNET}/factor-graph.fg \
+    2>$PROGRAM_PATH/${BNET}/bnet2fg.log
+fi
