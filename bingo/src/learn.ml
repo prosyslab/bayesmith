@@ -172,11 +172,12 @@ let interval_benchmarks =
     "sort/7.2";
     "tar/1.28";
     "cflow/1.5";
-    "libtasn1/4.3";
     "bc/1.06";
     "fribidi/1.0.7";
     "patch/2.7.1";
     "gzip/1.2.4a";
+    "bzip2/0.1";
+    "man/1.5h1";
   ]
 
 let taint_benchmarks =
