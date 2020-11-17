@@ -35,6 +35,7 @@ rules
 learn-out*
 weight-learn-out*
 test-*
+!test-em.py
 
 marshal
 log.txt
