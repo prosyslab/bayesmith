@@ -12,6 +12,7 @@ BASE_DIR = os.path.dirname(__file__)
 FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
 BENCH_TXT = os.path.join(BASE_DIR, "benchmarks.txt")
 MIN_V = 0.1
+PRETTY_DST = "images-final"
 
 
 def get_benchmark_info(benchmark):
@@ -98,9 +99,12 @@ def get_num_alarms(benchmark):
     with open(txt_path, 'r') as f:
         return len(f.readlines())
 
-def get_img_path(timestamps):
-    stamp = "+".join(timestamps)
-    return os.path.join(BASE_DIR, "images-" + stamp)
+def get_img_path(timestamps, is_pretty):
+    if is_pretty:
+        return os.path.join(BASE_DIR, PRETTY_DST)
+    else:
+        stamp = "+".join(timestamps)
+        return os.path.join(BASE_DIR, "images-" + stamp)
 
 
 def get_benchmarks():
@@ -125,7 +129,7 @@ class Plotter:
         self.rank_history = {}
         self.data_path_dict = get_data_path_dict(benchmark, timestamps)
         self.num_alarms = get_num_alarms(benchmark)
-        self.img_path = get_img_path(timestamps)
+        self.img_path = get_img_path(timestamps, is_pretty)
         self.is_pretty = is_pretty
         print('[Info] ' + benchmark + ' is specified')
         print('[Info] # Alarms: ' + str(self.num_alarms))
@@ -223,9 +227,11 @@ class Plotter:
         for alarm, rank in self.rank_history.items():
             linestyle, marker, label = get_label(alarm, self.is_pretty)
             plt.plot(rank, linestyle=linestyle, marker=marker, label=label)
-        plt.ylabel('Rank')
-        plt.xlabel('User interaction')
-        plt.legend(loc='upper right', borderaxespad=1, fancybox=True)
+        plt.ylabel('Rank', size=20)
+        plt.xlabel('User interaction', size=20)
+        plt.xticks(size = 15)
+        plt.yticks(size = 15)
+        plt.legend(loc='upper right', borderaxespad=1, fancybox=True, fontsize=20)
         plt.tight_layout()
         if is_saving:
             if not fname:
