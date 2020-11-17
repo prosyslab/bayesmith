@@ -78,6 +78,21 @@ def get_alarm_path(benchmark):
         print('Error: Make sure your configuration succeeds')
         exit(1)
 
+def get_cons_all2bnet_path(benchmark, timestamp):
+    version, atyp = get_benchmark_info(benchmark)
+    try:
+        with open(FACTS_TXT, 'r') as f:
+            benchmarks_dir = f.read().strip()
+            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
+                                     'sparrow-out', atyp,
+                                     'bnet-' + timestamp, 'cons_all2bnet.log')
+            return alarm_path
+    except FileNotFoundError as e:
+        print('Error: ', e)
+        print('Error: Check if facts.txt exists')
+        print('Error: Make sure your configuration succeeds')
+        exit(1)
+
 def get_bingo_stat_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
     try:
@@ -191,6 +206,17 @@ class Plotter:
             print("[Info] Avg Bingo feedback time at " + timestamp + ":")
             print(df.mean())
 
+    def measure_bnet_size(self):
+        for timestamp in self.timestamps:
+            cons_all2bnet_path = get_cons_all2bnet_path(self.benchmark, timestamp)
+            with open(cons_all2bnet_path, 'r') as f:
+                lines = f.readlines()
+                num_clause = lines[0].split(' ')[-2]
+                num_tuples = lines[1].split(' ')[-2]
+            print("[Info] # Clauses at " + timestamp + " : " + num_clause)
+            print("[Info] # Tuples at " + timestamp + " : " + num_tuples)
+
+
     def make_dir(self):
         """Make a directory where plots are being saved.
         """
@@ -280,6 +306,7 @@ if __name__ == "__main__":
         print('[Info] no-save option is set')
     plotter.count_vc()
     plotter.compute_avg_bingo_feedbk_time()
+    plotter.measure_bnet_size()
     plotter.render_or(save, args.output)
     if args.show:
         print('[Info] show option is set')
