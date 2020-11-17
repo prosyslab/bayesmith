@@ -7,6 +7,7 @@ import argparse
 import os
 import errno
 import json
+import numpy as np
 
 BASE_DIR = os.path.dirname(__file__)
 FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
@@ -132,9 +133,9 @@ def get_label(alarm, is_pretty):
     if not is_pretty:
         return "", "", alarm
     elif 'baseline' in alarm:
-        return "solid", ".", "Vanilla Bingo"
+        return "solid", ".", 5, "Vanilla Bingo"
     else:
-        return "dashed", "D", "BayeSmith"
+        return "dashed", "*", 7, "BayeSmith"
 
 
 class Plotter:
@@ -250,13 +251,25 @@ class Plotter:
         It takes save option into account on demand.
         """
         plt.figure(figsize=(10, 10))
-        for alarm, rank in self.rank_history.items():
-            linestyle, marker, label = get_label(alarm, self.is_pretty)
-            plt.plot(rank, linestyle=linestyle, marker=marker, label=label)
+        if self.is_pretty:
+            new_dict = {}
+            for alarm, rank in self.rank_history.items():
+                ts = alarm.split('@')[-1]
+                if ts in new_dict:
+                    new_dict[ts] = np.add(new_dict[ts], rank)
+                else:
+                    new_dict[ts] = rank
+            for timestamp, rank in new_dict.items():
+                linestyle, marker, markersize, label = get_label(timestamp, self.is_pretty)
+                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, label=label)
+        else:
+            for alarm, rank in self.rank_history.items():
+                linestyle, marker, markersize, label = get_label(alarm, self.is_pretty)
+                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, label=label)
         plt.ylabel('Rank', size=20)
         plt.xlabel('User interaction', size=20)
-        plt.xticks(size = 15)
-        plt.yticks(size = 15)
+        plt.xticks(size = 20)
+        plt.yticks(size = 20)
         plt.legend(loc='upper right', borderaxespad=1, fancybox=True, fontsize=20)
         plt.tight_layout()
         if is_saving:
