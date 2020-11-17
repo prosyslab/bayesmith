@@ -287,7 +287,7 @@ let main argv =
   | 0 ->
       (* child *)
       ()
-  | _ ->
+  | pid ->
       (* parent *)
       let env =
         {
@@ -306,6 +306,6 @@ let main argv =
         LNoise.history_add from_user |> ignore;
         LNoise.history_save ~filename:"history.txt" |> ignore)
       |> user_input "bingo> " env;
-      Unix.wait () |> ignore
+      Unix.waitpid [ Unix.WNOHANG ] pid |> ignore
 
 let _ = main Sys.argv
