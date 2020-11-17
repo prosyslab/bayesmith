@@ -80,7 +80,7 @@ else:
     print("Unsupported analysis type: " + analysis_type)
     exit(1)
 
-benchmarks = [ target_program not in b for b in benchmarks ]
+benchmarks = list(filter(lambda b: target_program not in b, benchmarks))
 
 projects = [ { 'name': p.split('/')[0], \
                'path': os.path.join(BENCHMARK_DIR,p,'sparrow-out', analysis_type) } \
