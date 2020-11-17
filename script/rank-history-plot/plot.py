@@ -268,9 +268,10 @@ class Plotter:
                 plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, label=label)
         plt.ylabel('Rank', size=20)
         plt.xlabel('User interaction', size=20)
-        plt.xticks(size = 20)
-        plt.yticks(size = 20)
+        plt.xticks(size=20)
+        plt.yticks(size=20)
         plt.legend(loc='upper right', borderaxespad=1, fancybox=True, fontsize=20)
+        plt.suptitle(self.benchmark, fontsize=16, y=0.97)
         plt.tight_layout()
         if is_saving:
             if not fname:
