@@ -58,7 +58,7 @@ BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [ "$IS_EM" = "$EM_TEST" ]; then
   $BINGO_DIR/bnet2fg.py $RULE_PROB_FILE 0.99 \
-    <$PROGRAM_PATH/bnet-baseline/named-bnet.out \
+    <$PROGRAM_PATH/bnet-baseline-no-comp/named-bnet.out \
     >$PROGRAM_PATH/${BNET}/factor-graph.fg \
     2>$PROGRAM_PATH/${BNET}/bnet2fg.log
 else
