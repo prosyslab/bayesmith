@@ -233,7 +233,7 @@ class Plotter:
         dic = {}
         for alarm, _ in self.rank_history.items():
             ts = alarm.split('@')[-1]
-            dic[ts] = 0
+            dic[ts] = []
         for alarm, rank in self.rank_history.items():
             temp = 0
             for i in range(len(rank) - 1):
@@ -241,9 +241,11 @@ class Plotter:
                 vc_size = diff / float(self.num_alarms)
                 if vc_size > MIN_V:
                     ts = alarm.split('@')[-1]
-                    dic[ts] += 1
-        for ts, num_vc in dic.items():
-            print("[Info] # VC in " + ts + ": " + str(num_vc))
+                    dic[ts] += [ diff ]
+        for ts, vc_lst in dic.items():
+            print("[Info] # VC in " + ts + ": " + str(len(vc_lst)))
+            avg = sum(vc_lst) / len(vc_lst)
+            print("[Info] Avg. VC size in " + ts + ": " + str(avg))
 
     def render_or(self, is_saving=True, fname=None):
         """Render plot by traversing over history of each alarm.
