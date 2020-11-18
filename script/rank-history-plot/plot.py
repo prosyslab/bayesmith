@@ -244,7 +244,10 @@ class Plotter:
                     dic[ts] += [ diff ]
         for ts, vc_lst in dic.items():
             print("[Info] # VC in " + ts + ": " + str(len(vc_lst)))
-            avg = sum(vc_lst) / len(vc_lst)
+            if len(vc_lst) == 0:
+                avg = "NO VCs"
+            else:
+                avg = sum(vc_lst) / len(vc_lst)
             print("[Info] Avg. VC size in " + ts + ": " + str(avg))
 
     def render_or(self, is_saving=True, fname=None):
