@@ -238,8 +238,9 @@ class Plotter:
             temp = 0
             for i in range(len(rank) - 1):
                 diff = rank[i + 1] - rank[i]
-                vc_size = diff / float(self.num_alarms)
-                if vc_size > MIN_V:
+                #vc_size = diff / float(self.num_alarms)
+                #if vc_size > MIN_V:
+                if diff > 0:
                     ts = alarm.split('@')[-1]
                     dic[ts] += [ diff ]
         for ts, vc_lst in dic.items():
