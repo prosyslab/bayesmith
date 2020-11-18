@@ -12,7 +12,7 @@ import numpy as np
 BASE_DIR = os.path.dirname(__file__)
 FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
 BENCH_TXT = os.path.join(BASE_DIR, "benchmarks.txt")
-MIN_V = 0.1
+MIN_V = 0.01
 PRETTY_DST = "images-final"
 
 
@@ -238,9 +238,9 @@ class Plotter:
             temp = 0
             for i in range(len(rank) - 1):
                 diff = rank[i + 1] - rank[i]
-                #vc_size = diff / float(self.num_alarms)
-                #if vc_size > MIN_V:
-                if diff > 0:
+                # if diff > 0:
+                vc_size = diff / float(self.num_alarms)
+                if vc_size > MIN_V:
                     ts = alarm.split('@')[-1]
                     dic[ts] += [ diff ]
         for ts, vc_lst in dic.items():
