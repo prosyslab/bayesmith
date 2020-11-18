@@ -226,7 +226,8 @@ def analyze(args, benchmark_list):
         run_sparrow(args, program, version)
 
 
-def build_bnet(program, version, analysis_type, bnet_dir, mode, em_rule):
+def build_bnet(program, version, analysis_type, bnet_dir, skip_compress, mode,
+               em_rule):
     print("Building Bayesian Network to {}".format(bnet_dir))
     benchmark_dir = os.path.join(BENCHMARK_DIR, program)
     output_dir = os.path.join(benchmark_dir, version, "sparrow-out")
@@ -236,19 +237,20 @@ def build_bnet(program, version, analysis_type, bnet_dir, mode, em_rule):
     ]
     subprocess.run(command, check=True)
     analysis_dir = os.path.join(output_dir, analysis_type)
+    skip_compress = "YES" if skip_compress else "NO"
     command = [
         os.path.join(BINGO_DIR, "build-bnet.sh"), analysis_dir,
-        os.path.join(analysis_dir, bnet_dir, "Alarm.txt"), bnet_dir
+        os.path.join(analysis_dir, bnet_dir, "Alarm.txt"), bnet_dir, skip_compress
     ]
     if mode == TRAIN_MODE:
         return
     elif mode == TEST_MODE and em_rule:
-        subprocess.run(command + [ "em-test", em_rule ], check=True)
+        subprocess.run(command + ["em-test", em_rule], check=True)
     else:
         subprocess.run(command, check=True)
         cnt = 0
         with open(os.path.join(analysis_dir, bnet_dir, "named_cons_all.txt"),
-                'r') as f:
+                  'r') as f:
             for line in f.readlines():
                 cnt += 1
         print("Number of lines named_cons_all: {}".format(cnt))
@@ -272,8 +274,9 @@ def run_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
     ]
     subprocess.run(command)
 
-def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
-              suffix, fg_file):
+
+def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type,
+                       bnet_dir, suffix, fg_file):
     print("Running Bingo (em-train)")
     command = [
         os.path.join(BINGO_DIR, "generate-ground-truth.py"), benchmark_dir,
@@ -290,8 +293,9 @@ def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_d
     ]
     subprocess.run(command)
 
-def run_em_test_bingo(program, benchmark_dir, output_dir, analysis_type, bnet_dir,
-              suffix):
+
+def run_em_test_bingo(program, benchmark_dir, output_dir, analysis_type,
+                      bnet_dir, suffix):
     print("Running Bingo (em-test)")
     command = [
         os.path.join(BINGO_DIR, "generate-ground-truth.py"), benchmark_dir,
@@ -352,7 +356,8 @@ def rank(args, benchmark_list):
             if not args.skip_generate_named_cons:
                 generate_named_cons(args, program, version, analysis_type,
                                     bnet_dir)
-            build_bnet(program, version, analysis_type, bnet_dir, "RANK", None)
+            build_bnet(program, version, analysis_type, bnet_dir,
+                       args.skip_compress, "RANK", None)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_bingo(program, benchmark_dir, output_dir, analysis_type,
                       bnet_dir, suffix)
@@ -390,10 +395,11 @@ def em_train(args, benchmark_list):
             if not args.skip_generate_named_cons:
                 generate_named_cons(args, program, version, analysis_type,
                                     bnet_dir)
-            build_bnet(program, version, analysis_type, bnet_dir, TRAIN_MODE, None)
+            build_bnet(program, version, analysis_type, bnet_dir, False,
+                       TRAIN_MODE, None)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
-            run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type,
-                      bnet_dir, suffix, args.fg_file)
+            run_em_train_bingo(program, benchmark_dir, output_dir,
+                               analysis_type, bnet_dir, suffix, args.fg_file)
 
 
 def em_test(args, benchmark_list):
@@ -429,10 +435,11 @@ def em_test(args, benchmark_list):
                 generate_named_cons(args, program, version, analysis_type,
                                     bnet_dir)
             rule_prob_file = os.path.join(PROJECT_HOME, args.rule_prob_file)
-            build_bnet(program, version, analysis_type, bnet_dir, TEST_MODE, rule_prob_file)
+            build_bnet(program, version, analysis_type, bnet_dir, False,
+                       TEST_MODE, rule_prob_file)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
-            run_em_test_bingo(program, benchmark_dir, output_dir, analysis_type,
-                      bnet_dir, suffix)
+            run_em_test_bingo(program, benchmark_dir, output_dir,
+                              analysis_type, bnet_dir, suffix)
 
 
 def translate_cons(new_path, old_output_path, new_output_path, analysis_type,
@@ -506,6 +513,7 @@ def main():
     parser_rank.add_argument('--skip-generate-named-cons', action='store_true')
     parser_rank.add_argument('--timestamp', type=str)
     parser_rank.add_argument('--datalog', type=str)
+    parser_rank.add_argument('--skip-compress', action='store_true')
     parser_em_train = subparsers.add_parser('em-train')
     parser_em_train.add_argument('target', type=str)
     parser_em_train.add_argument('fg_file', type=str)
