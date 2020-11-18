@@ -2,12 +2,13 @@
 
 import os
 import sys
+import subprocess
 
 
 PROJECT_HOME = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 BENCHMARK_DIR = os.path.join(PROJECT_HOME, 'benchmarks')
 BINGO_DIR = os.path.join(PROJECT_HOME, 'bingo')
-BNET2FG_BIN = os.path.join(BINGO_DIR, "bnet2fg.py")
+RUN_BIN = os.path.join(PROJECT_HOME, 'bin', 'run.py')
 
 
 interval_benchmarks = [
@@ -34,8 +35,23 @@ else:
     print("Unsupported analysis type: " + analysis_type)
     exit(1)
 
-train_benchmarks = [ target_program not in b for b in benchmarks ]
-test_benchmark = [ target_program in b for b in benchmarks ]
+training_benchs = list(filter(lambda b: target_program not in b, benchmarks))
+test_bench = list(filter(lambda b: target_program in b, benchmarks))[0]
 
+def make_timestamp(bench_name, mode):
+    return mode + "-" + target_program + bench_name
 
+def count_iters(bnet_dir):
+    return 
 
+def run_em_train():
+    pass
+
+def run_em_test():
+    ts = make_timestamp(test_bench, 'test')
+    em_test_cmd = [ RUN_BIN, "em-test", last_rule_prob, os.path.join(BENCHMARK_DIR, test_bench) ]
+    p = subprocess.Popen(em_test_cmd)
+    p.wait()
+
+if __name__ == "__main__":
+    run_em_test()
