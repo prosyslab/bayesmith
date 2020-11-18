@@ -62,8 +62,8 @@ assert 0 < probMax and probMax < 1
 
 interval_benchmarks = [
     "wget/1.12", "readelf/2.24", "grep/2.19", "sed/4.3", "sort/7.2",
-    "tar/1.28", "cflow/1.5", "bc/1.06", "fribidi/1.0.7",
-    "patch/2.7.1", "gzip/1.2.4a"
+    "tar/1.28", "cflow/1.5", "bc/1.06", "fribidi/1.0.7", "patch/2.7.1",
+    "gzip/1.2.4a"
 ]
 
 taint_benchmarks = [
@@ -88,16 +88,16 @@ projects = [ { 'name': p.split('/')[0], \
 
 for p in projects:
     p['bnetFileName'] = '{0}'.format(
-        p['path']) + '/bnet-baseline/named-bnet.out'
+        p['path']) + '/bnet-baseline-no-comp/named-bnet.out'
     assert os.path.isfile(p['bnetFileName'])
     p['dictFileName'] = '{0}'.format(
-        p['path']) + '/bnet-baseline/bnet-dict.out'
+        p['path']) + '/bnet-baseline-no-comp/bnet-dict.out'
     assert os.path.isfile(p['dictFileName'])
     p['baseQueriesFileName'] = '{0}'.format(
-        p['path']) + '/bnet-baseline/Alarm.txt'
+        p['path']) + '/bnet-baseline-no-comp/Alarm.txt'
     assert os.path.isfile(p['baseQueriesFileName'])
     p['oracleQueriesFileName'] = '{0}'.format(
-        p['path']) + '/bnet-baseline/GroundTruth.txt'
+        p['path']) + '/bnet-baseline-no-comp/GroundTruth.txt'
     assert os.path.isfile(p['oracleQueriesFileName'])
 
     p['bnetLines'] = [line.strip() for line in open(p['bnetFileName'])]
