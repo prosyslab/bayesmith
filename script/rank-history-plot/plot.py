@@ -133,9 +133,9 @@ def get_label(alarm, is_pretty):
     if not is_pretty:
         return "", "", alarm
     elif 'baseline' in alarm:
-        return "solid", ".", 5, "Vanilla Bingo"
+        return "dashed", "o", 6, "Bingo"
     else:
-        return "dashed", "*", 7, "BayeSmith"
+        return "solid", "*", 8, "BayeSmith"
 
 
 class Plotter:
@@ -256,10 +256,19 @@ class Plotter:
 
         It takes save option into account on demand.
         """
+        plt.rcParams['axes.titlepad'] = 10
+        plt.rcParams['xtick.major.pad'] = 0
+        plt.rcParams['ytick.major.pad'] = 0
+        plt.rcParams['xtick.labelsize'] = 20
+        plt.rcParams['ytick.labelsize'] = 20
+        plt.rcParams['legend.fontsize'] = 25
         plt.figure(figsize=(10, 10))
+        pos = '111'
+        plt.subplot(pos)
         if self.is_pretty:
             new_dict = {}
-            for alarm, rank in self.rank_history.items():
+            for alarm in reversed(list(self.rank_history.keys())):
+                rank = self.rank_history[alarm]
                 ts = alarm.split('@')[-1]
                 if ts in new_dict:
                     new_dict[ts] = np.add(new_dict[ts], rank)
@@ -267,18 +276,19 @@ class Plotter:
                     new_dict[ts] = rank
             for timestamp, rank in new_dict.items():
                 linestyle, marker, markersize, label = get_label(timestamp, self.is_pretty)
-                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, label=label)
+                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, markevery=5, label=label, linewidth=3)
         else:
-            for alarm, rank in self.rank_history.items():
+            for alarm in reversed(list(self.rank_history.keys())):
+                rank = self.rank_history[alarm]
                 linestyle, marker, markersize, label = get_label(alarm, self.is_pretty)
-                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, label=label)
-        plt.ylabel('Rank', size=20)
-        plt.xlabel('User interaction', size=20)
-        plt.xticks(size=20)
-        plt.yticks(size=20)
-        plt.legend(loc='upper right', borderaxespad=1, fancybox=True, fontsize=20)
-        plt.suptitle(self.benchmark, fontsize=16, y=0.97)
-        plt.tight_layout()
+                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, markevery=5, label=label, linewidth=3)
+        plt.ylabel('Rank', size=25)
+        plt.xlabel('User interaction', size=25)
+        plt.xticks(size=23)
+        plt.yticks(size=23)
+        plt.legend(loc='upper right', borderaxespad=0.5, fancybox=True, fontsize=30)
+        plt.suptitle(self.benchmark, fontsize=35)
+        plt.subplots_adjust(top=0.9, right=0.97, bottom=0.1, wspace = 0.25)
         if is_saving:
             if not fname:
                 fname = self.benchmark + '.png'
