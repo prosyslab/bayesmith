@@ -39,7 +39,10 @@ training_benchs = list(filter(lambda b: target_program not in b, benchmarks))
 test_bench = list(filter(lambda b: target_program in b, benchmarks))[0]
 
 def make_timestamp(bench_name, mode):
-    return mode + "-" + target_program + bench_name
+    if mode == 'test':
+        return "-".join([mode, target_program])
+    else:
+        return "-".join([mode, target_program, bench_name)
 
 def count_iters(bnet_dir):
     return 
@@ -48,8 +51,8 @@ def run_em_train():
     pass
 
 def run_em_test():
-    ts = make_timestamp(test_bench, 'test')
-    em_test_cmd = [ RUN_BIN, "em-test", last_rule_prob, os.path.join(BENCHMARK_DIR, test_bench) ]
+    ts = make_timestamp(None, 'test')
+    em_test_cmd = [ RUN_BIN, "em-test", last_rule_prob, os.path.join(BENCHMARK_DIR, test_bench), '--timestamp', ts ]
     p = subprocess.Popen(em_test_cmd)
     p.wait()
 
