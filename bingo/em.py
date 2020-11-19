@@ -46,7 +46,8 @@ BINGO_BIN = os.path.join(LIBDAI_HOME, "bingo")
 
 analysis_type = sys.argv[1]
 target_program = sys.argv[2]
-outdir = "weight-learn-out-" + target_program
+nth = sys.argv[3]
+outdir = "weight-learn-out-" + target_program + '-' + nth
 os.makedirs(outdir, exist_ok=True)
 logging.basicConfig(level=logging.INFO, \
                     format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s", \
@@ -258,5 +259,6 @@ while change > tolerance:
         change = max(change, abs(newProb - ruleProbs[rule]))
         ruleProbs[rule] = newProb
 
+loggin.info('EM DONE')
 ruleProbFileName = '{0}/rule-prob.txt'.format(outdir)
 writeRuleProbs(ruleProbFileName)

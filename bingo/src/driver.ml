@@ -24,6 +24,7 @@ let exec_wrapper_command ic oc cmd =
   P.eprintf "Driver to wrapper: %s\n" cmd;
   output_string oc (cmd ^ "\n");
   flush_all ();
+  (* TODO: handle LIBDAI EXCEPTION *)
   let response = input_line ic in
   P.eprintf "Wrapper to driver: %s\n" response;
   flush_all ();
@@ -282,7 +283,7 @@ let main argv =
     Unix.create_process wrapper_executable
       [| wrapper_executable; "--no-history"; fg_file_name |]
       fd_in1 fd_out2
-      (Unix.openfile "/dev/null" [] 0o666)
+      Unix.stderr
   with
   | 0 ->
       (* child *)
@@ -306,6 +307,6 @@ let main argv =
         LNoise.history_add from_user |> ignore;
         LNoise.history_save ~filename:"history.txt" |> ignore)
       |> user_input "bingo> " env;
-      Unix.waitpid [ Unix.WNOHANG ] pid |> ignore
+      Unix.waitpid [ Unix.WNOHANG; Unix.WUNTRACED ] pid |> ignore
 
 let _ = main Sys.argv

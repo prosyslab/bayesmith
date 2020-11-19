@@ -296,7 +296,7 @@ def run_em_train_bingo(program, benchmark_dir, output_dir, analysis_type,
 
 def run_em_test_bingo(program, benchmark_dir, output_dir, analysis_type,
                       bnet_dir, suffix):
-    print("Running Bingo (em-test)")
+    print("Running Bingo")
     command = [
         os.path.join(BINGO_DIR, "generate-ground-truth.py"), benchmark_dir,
         analysis_type, bnet_dir
@@ -379,23 +379,16 @@ def em_train(args, benchmark_list):
             analysis_info = json.load(f)
         analysis_type = analysis_info["type"]
 
-        if args.reuse and os.path.isdir(
-                os.path.join(output_dir, analysis_type + '/bnet')):
-            print("(reuse old bayesian network)")
-            suffix = args.reuse
-            bnet_dir = 'bnet-' + args.reuse
+        if args.timestamp is None:
+            suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
         else:
-            if args.timestamp is None:
-                suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
-            else:
-                suffix = args.timestamp
-            bnet_dir = 'bnet-' + suffix
-            os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
-                        exist_ok=True)
-            if not args.skip_generate_named_cons:
-                generate_named_cons(args, program, version, analysis_type,
-                                    bnet_dir)
-            build_bnet(program, version, analysis_type, bnet_dir, False,
+            suffix = args.timestamp
+        bnet_dir = 'bnet-' + suffix
+        os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
+                    exist_ok=True)
+        generate_named_cons(args, program, version, analysis_type,
+                                bnet_dir)
+        build_bnet(program, version, analysis_type, bnet_dir, False,
                        TRAIN_MODE, None)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_em_train_bingo(program, benchmark_dir, output_dir,
