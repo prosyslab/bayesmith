@@ -418,25 +418,18 @@ def em_test(args, benchmark_list):
             analysis_info = json.load(f)
         analysis_type = analysis_info["type"]
 
-        if args.reuse and os.path.isdir(
-                os.path.join(output_dir, analysis_type + '/bnet')):
-            print("(reuse old bayesian network)")
-            suffix = args.reuse
-            bnet_dir = 'bnet-' + args.reuse
+        if args.timestamp is None:
+            suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
         else:
-            if args.timestamp is None:
-                suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
-            else:
-                suffix = args.timestamp
-            bnet_dir = 'bnet-' + suffix
-            os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
-                        exist_ok=True)
-            if not args.skip_generate_named_cons:
-                generate_named_cons(args, program, version, analysis_type,
-                                    bnet_dir)
-            rule_prob_file = os.path.join(PROJECT_HOME, args.rule_prob_file)
-            build_bnet(program, version, analysis_type, bnet_dir, False,
-                       TEST_MODE, rule_prob_file)
+            suffix = args.timestamp
+        bnet_dir = 'bnet-' + suffix
+        os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
+                    exist_ok=True)
+        generate_named_cons(args, program, version, analysis_type,
+                            bnet_dir)
+        rule_prob_file = os.path.join(PROJECT_HOME, args.rule_prob_file)
+        build_bnet(program, version, analysis_type, bnet_dir, False,
+                    TEST_MODE, rule_prob_file)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_em_test_bingo(program, benchmark_dir, output_dir,
                               analysis_type, bnet_dir, suffix)

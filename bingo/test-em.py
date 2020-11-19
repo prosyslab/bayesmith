@@ -9,6 +9,7 @@ PROJECT_HOME = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 BENCHMARK_DIR = os.path.join(PROJECT_HOME, 'benchmarks')
 BINGO_DIR = os.path.join(PROJECT_HOME, 'bingo')
 RUN_BIN = os.path.join(PROJECT_HOME, 'bin', 'run.py')
+RULE_PROB_TOK = 'rule-prob-'
 
 
 interval_benchmarks = [
@@ -25,7 +26,7 @@ taint_benchmarks = [
 
 analysis_type = sys.argv[1]
 target_program = sys.argv[2]
-src_dir = sys.argv[3]
+src_dir = os.path.join(PROJECT_HOME, sys.argv[3])
 
 if analysis_type == "interval":
     benchmarks = interval_benchmarks
@@ -50,9 +51,14 @@ def count_iters(bnet_dir):
 def run_em_train():
     pass
 
+def find_last_rule_prob(bench_name):
+    last = len(list(filter(lambda name: RULE_PROB_TOK in name, os.listdir(src_dir))))
+    return os.path.join(src_dir, RULE_PROB_TOK + str(last) + '.txt')
+
 def run_em_test():
     ts = make_timestamp(None, 'test')
-    em_test_cmd = [ RUN_BIN, "em-test", last_rule_prob, os.path.join(BENCHMARK_DIR, test_bench), '--timestamp', ts ]
+    last_rule_prob_file = find_last_rule_prob(target_program)
+    em_test_cmd = [ RUN_BIN, "em-test", os.path.join(BENCHMARK_DIR, test_bench), last_rule_prob_file, '--timestamp', ts ]
     p = subprocess.Popen(em_test_cmd)
     p.wait()
 
