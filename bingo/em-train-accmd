@@ -30,12 +30,12 @@ BINGO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p $PROBLEM_DIR/bingo_combined-$SUFFIX
 
-$BINGO_DIR/driver $PROBLEM_DIR/bnet-baseline/bnet-dict.out \
+$BINGO_DIR/driver $PROBLEM_DIR/bnet-baseline-no-comp/bnet-dict.out \
                   $FG_FILE \
                   $BASE_FILE \
                   $ORACLE_FILE \
                   $BINGO_EXE \
-                  $PROBLEM_DIR/bnet-baseline/named_cons_all.txt.cep \
+                  $PROBLEM_DIR/bnet-baseline-no-comp/named_cons_all.txt.cep \
                   "${OLD_LABEL_FILE}" \
                   $SUFFIX \
                   > $PROBLEM_DIR/$BNET/driver.out 2> $PROBLEM_DIR/$BNET/driver.log <<EOF

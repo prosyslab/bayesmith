@@ -74,5 +74,5 @@ def run_em_test():
 
 
 if __name__ == "__main__":
-    # run_em_test()
-    run_em_train()
+    run_em_test()
+    #run_em_train()
