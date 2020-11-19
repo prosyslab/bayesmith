@@ -38,7 +38,7 @@ def get_train_and_test_bench(benchmarks, target_program):
     test_bench = list(filter(lambda b: target_program in b, benchmarks))[0]
     return training_benchs, test_bench
 
-def make_timestamp(bench_name, mode, target_program):
+def make_timestamp(mode, target_program, bench_name):
     if mode == 'test':
         return "-".join([mode, target_program])
     else:
@@ -64,7 +64,7 @@ def stat_train(benchmarks, test_program, analysis_type):
     training_benchs, _ = get_train_and_test_bench(benchmarks, test_program)
     for tb in training_benchs:
         tb_name = tb.split('/')[0]
-        ts = make_timestamp(test_program, 'train', tb_name)
+        ts = make_timestamp('train', test_program, tb_name)
         train_bench_dir = get_bench_dir(tb)
         bingo_stats_path = get_bingo_stats_path(train_bench_dir, ts, analysis_type)
         bingo_base_stats_path = get_bingo_base_stats_path(train_bench_dir, analysis_type)
