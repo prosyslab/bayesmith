@@ -228,7 +228,7 @@ class Plotter:
                 print('Error: ', e)
                 exit(1)
 
-    
+
     def count_vc(self):
         dic = {}
         for alarm, _ in self.rank_history.items():
