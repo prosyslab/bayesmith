@@ -201,6 +201,10 @@ while change > tolerance:
                 driverProcStdin.flush()
                 return float(driverProcStdout.readline().strip())
 
+            def exit_bingo():
+                print('exit', file=driverProcStdin)
+                driverProcStdin.flush()
+
             for t in p['baseQueries']:
                 clamp(t)
             bp()
@@ -241,6 +245,7 @@ while change > tolerance:
                         msg = 'Querying clause: {0}. zeroProb + oneProb = 0. allProbs: {1}.'
                         msg = msg.format(line, ' '.format(allProbs))
                         logging.warning(msg)
+            exit_bingo()
 
     change = 0
     for rule in allRuleNames:
