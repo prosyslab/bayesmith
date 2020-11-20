@@ -291,7 +291,7 @@ class Plotter:
         plt.subplots_adjust(top=0.9, right=0.97, bottom=0.1, wspace = 0.25)
         if is_saving:
             if not fname:
-                fname = self.benchmark + '.png'
+                fname = self.benchmark + '.pdf'
             save_path = os.path.join(self.img_path, fname)
             plt.savefig(save_path)
 
