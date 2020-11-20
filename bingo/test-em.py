@@ -30,6 +30,7 @@ taint_benchmarks = [
 analysis_type = sys.argv[1]
 target_program = sys.argv[2]
 src_dir = os.path.join(PROJECT_HOME, sys.argv[3])
+nth = sys.argv[4]
 
 if analysis_type == "interval":
     benchmarks = interval_benchmarks
@@ -44,9 +45,9 @@ test_bench = list(filter(lambda b: target_program in b, benchmarks))[0]
 
 def make_timestamp(bench_name, mode):
     if mode == 'test':
-        return "-".join([mode, target_program])
+        return "-".join([mode, target_program, nth])
     else:
-        return "-".join([mode, target_program, bench_name])
+        return "-".join([mode, target_program, bench_name, nth])
 
 def count_iters(bnet_dir):
     return 
