@@ -198,18 +198,16 @@ let repl env cmd =
       cmd_print env outfile;
       Some env
   | [ "exit" ] ->
-      cmd_exit env;
       None
   | [ "AC"; problem_dir ] ->
       cmd_carousel env problem_dir;
-      cmd_exit env;
       None
   | [ "FQ"; clause_idx; val_idx ] -> (
       match cmd_factor_marginal env clause_idx val_idx with
       | Some prob ->
           P.printf "%f\n" prob;
           Some env
-      | None -> Some env )
+      | None -> None )
   | [] -> Some env
   | _ ->
       P.eprintf "Invalid command\n";
@@ -219,10 +217,10 @@ let rec user_input prompt env cb =
   match LNoise.linenoise prompt with
   | None -> ()
   | Some v -> (
-      let env = repl env v in
+      let env' = repl env v in
       flush_all ();
       cb v;
-      match env with Some env -> user_input prompt env cb | None -> () )
+      match env' with Some env -> user_input prompt env cb | None -> cmd_exit env )
   | exception Sys.Break -> cmd_exit env
 
 let populate_bnet dict_file_name =
