@@ -59,7 +59,6 @@ def parse_inv_count(f):
     return inv_count
 
 def stat_train(benchmarks, test_program, analysis_type):
-    print("Computing TRAIN results begins..")
     train_score = 0
     training_benchs, _ = get_train_and_test_bench(benchmarks, test_program)
     for tb in training_benchs:
@@ -72,7 +71,7 @@ def stat_train(benchmarks, test_program, analysis_type):
             with open(bingo_base_stats_path, 'r') as g:
                 cnt1 = parse_inv_count(f)
                 cnt2 = parse_inv_count(g)
-                print(tb_name, ':', cnt2, '->', cnt1)
+                print(",".join([tb_name, cnt2, cnt1]))
 
 if __name__ == "__main__":
     for atyp in ANALYSES:
