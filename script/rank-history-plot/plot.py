@@ -28,14 +28,13 @@ def get_benchmark_info(benchmark):
         print('Error: ' + benchmark + ' is not known. Check benchmarks.txt')
         exit(1)
 
-    # Read info.json
+    # Read sparrow-config.json
     with open(FACTS_TXT, 'r') as f:
         benchmarks_dir = f.read().strip()
-        info_json = os.path.join(benchmarks_dir, benchmark, version, 'sparrow',
-                                 'info.json')
-        with open(info_json, 'r') as g:
+        sparrow_config = os.path.join(benchmarks_dir, benchmark, 'sparrow-config.json')
+        with open(sparrow_config, 'r') as g:
             data = json.load(g)
-            analysis_type = data['type']
+            analysis_type = data['analysis_type']
 
     return version, analysis_type
 

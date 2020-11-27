@@ -335,10 +335,10 @@ def rank(args, benchmark_list):
         benchmark_dir = os.path.join(BENCHMARK_DIR, program, version)
         output_dir = os.path.join(benchmark_dir, "sparrow-out")
 
-        json_info = os.path.join(path, "sparrow", "info.json")
+        json_info = os.path.join(os.path.dirname(path), "sparrow-config.json")
         with open(json_info) as f:
             analysis_info = json.load(f)
-        analysis_type = analysis_info["type"]
+        analysis_type = analysis_info["analysis_type"]
 
         if args.reuse and os.path.isdir(
                 os.path.join(output_dir, analysis_type + '/bnet')):
@@ -374,10 +374,10 @@ def em_train(args, benchmark_list):
         benchmark_dir = os.path.join(BENCHMARK_DIR, program, version)
         output_dir = os.path.join(benchmark_dir, "sparrow-out")
 
-        json_info = os.path.join(path, "sparrow", "info.json")
+        json_info = os.path.join(os.path.dirname(path), "sparrow-config.json")
         with open(json_info) as f:
             analysis_info = json.load(f)
-        analysis_type = analysis_info["type"]
+        analysis_type = analysis_info["analysis_type"]
 
         if args.timestamp is None:
             suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
@@ -406,10 +406,10 @@ def em_test(args, benchmark_list):
         benchmark_dir = os.path.join(BENCHMARK_DIR, program, version)
         output_dir = os.path.join(benchmark_dir, "sparrow-out")
 
-        json_info = os.path.join(path, "sparrow", "info.json")
+        json_info = os.path.join(os.path.dirname(path), "sparrow-config.json")
         with open(json_info) as f:
             analysis_info = json.load(f)
-        analysis_type = analysis_info["type"]
+        analysis_type = analysis_info["analysis_type"]
 
         if args.timestamp is None:
             suffix = datetime.today().strftime('%Y%m%d-%H:%M:%S')
@@ -459,10 +459,10 @@ def drake(args):
     # TODO: simplify
     old_path = os.path.abspath(args.old)
     new_path = os.path.abspath(args.new)
-    json_info = os.path.join(new_path, "sparrow", "info.json")
+    json_info = os.path.join(os.path.dirname(new_path), "sparrow-config.json")
     with open(json_info) as f:
         analysis_info = json.load(f)
-    analysis_type = analysis_info["type"]
+    analysis_type = analysis_info["analysis_type"]
     old_output_path = os.path.join(old_path, "sparrow-out")
     new_output_path = os.path.join(new_path, "sparrow-out")
     # TODO: currently pick the latest one
