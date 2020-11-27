@@ -264,6 +264,6 @@ while change > tolerance:
         change = max(change, abs(newProb - ruleProbs[rule]))
         ruleProbs[rule] = newProb
 
-loggin.info('EM DONE')
+logging.info('EM DONE')
 ruleProbFileName = '{0}/rule-prob.txt'.format(outdir)
 writeRuleProbs(ruleProbFileName)
