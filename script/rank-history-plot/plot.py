@@ -262,7 +262,7 @@ class Plotter:
         plt.rcParams['xtick.labelsize'] = 20
         plt.rcParams['ytick.labelsize'] = 20
         plt.rcParams['legend.fontsize'] = 25
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(11.3, 10))
         pos = '111'
         plt.subplot(pos)
         if self.is_pretty:
@@ -282,10 +282,10 @@ class Plotter:
                 rank = self.rank_history[alarm]
                 linestyle, marker, markersize, label = get_label(alarm, self.is_pretty)
                 plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, markevery=5, label=label, linewidth=3)
-        plt.ylabel('Rank', size=25)
-        plt.xlabel('User interaction', size=25)
-        plt.xticks(size=23)
-        plt.yticks(size=23)
+        plt.ylabel('Rank', size=30)
+        plt.xlabel('User interaction', size=30)
+        plt.xticks(size=25)
+        plt.yticks(size=25)
         plt.legend(loc='upper right', borderaxespad=0.5, fancybox=True, fontsize=30)
         plt.suptitle(self.benchmark, fontsize=35)
         plt.subplots_adjust(top=0.9, right=0.97, bottom=0.1, wspace = 0.25)
