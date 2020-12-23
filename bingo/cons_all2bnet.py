@@ -79,7 +79,7 @@ if 'narrowand' in sys.argv:
         antecedents = clause2Antecedents(oldClause)
         antecedentCount = len(antecedents)
         assert antecedentCount >= MAX_ANTECEDENTS
-        logging.info('Discovered clause {0} with {1} antecdents. Splitting!'.format(oldClause, antecedentCount))
+        logging.info('Discovered clause {0} with {1} antecedents. Splitting!'.format(oldClause, antecedentCount))
         # split!
 
         t1 = 'C{0}'.format(len(allClauses))
@@ -244,7 +244,6 @@ for node in allNodes:
         print(nodeStr)
     else:
         assert node in allConsequents
-        t = node
         parents = [ str(nodeIndex[clause]) for clause in tuple2ConsequentClauses[node] ]
         # nodeStr = '+ {0} {1} // {2}'.format(len(parents), ' '.join(parents), node)
         nodeStr = '+ {0} {1}'.format(len(parents), ' '.join(parents))
