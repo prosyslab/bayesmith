@@ -197,8 +197,7 @@ let repl env cmd =
   | [ "P"; outfile ] ->
       cmd_print env outfile;
       Some env
-  | [ "exit" ] ->
-      None
+  | [ "exit" ] -> None
   | [ "AC"; problem_dir ] ->
       cmd_carousel env problem_dir;
       None
@@ -220,7 +219,9 @@ let rec user_input prompt env cb =
       let env' = repl env v in
       flush_all ();
       cb v;
-      match env' with Some env -> user_input prompt env cb | None -> cmd_exit env )
+      match env' with
+      | Some env -> user_input prompt env cb
+      | None -> cmd_exit env )
   | exception Sys.Break -> cmd_exit env
 
 let populate_bnet dict_file_name =
@@ -280,8 +281,7 @@ let main argv =
   match
     Unix.create_process wrapper_executable
       [| wrapper_executable; "--no-history"; fg_file_name |]
-      fd_in1 fd_out2
-      Unix.stderr
+      fd_in1 fd_out2 Unix.stderr
   with
   | 0 ->
       (* child *)

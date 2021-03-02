@@ -725,11 +725,16 @@ let of_file dl_file_path rule_prob_txt_path =
     | exception End_of_file -> map
   in
   let ic_dl = open_in dl_file_path in
-  let ic_txt = open_in rule_prob_txt_path in
   let rule_lines, derive_rule_lines = read_dl ic_dl [] [] in
-  let rule_prob_map = read_txt ic_txt RuleProbMap.empty in
+  let rule_prob_map =
+    if rule_prob_txt_path = "" then RuleProbMap.empty
+    else
+      let ic_txt = open_in rule_prob_txt_path in
+      let map = read_txt ic_txt RuleProbMap.empty in
+      close_in ic_txt;
+      map
+  in
   close_in ic_dl;
-  close_in ic_txt;
   let make_rules l1 l2 =
     let get_head_and_tail line =
       let _ = Str.search_forward (Str.regexp "\\(.*\\) :- \\(.*\\).") line 0 in

@@ -1572,7 +1572,7 @@ let opts =
       "Run test on given benchmark, dl and rule_prob files" );
     ( "-use_baseline",
       Arg.Set use_baseline,
-      "Set baseline as evaluation criteria" );
+      "Set baseline as evaluation criteria at each time" );
   ]
 
 (* TODO *)
@@ -1631,8 +1631,7 @@ let main () =
   initialize ();
   log "Chosen program: %s" !target;
   let initial_rules =
-    if !dl_from <> "" && !rule_prob_from <> "" then
-      (Datalog.of_file !dl_from !rule_prob_from).rules
+    if !dl_from <> "" then (Datalog.of_file !dl_from !rule_prob_from).rules
     else if !analysis_type = "interval" then Buffer_rules.buffer_overflow_rules
     else if !analysis_type = "taint" then Integer_rules.integer_overflow_rules
     else failwith "Unknown analysis type"
