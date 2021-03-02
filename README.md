@@ -12,6 +12,8 @@
 $ bingo/learn -reuse -analysis_type [ interval | taint ] -debug $BENCH_NAME
 ```
 
+e.g. `bingo/learn -reuse -analysis_type interval -debug sort`
+
 Logs (`learn.log`) and output (`.dl` file) will be generated under `learn-out` directory.
 One may change the name of the directory with option `-out_dir $DIRNAME`.
 
@@ -20,6 +22,8 @@ One may change the name of the directory with option `-out_dir $DIRNAME`.
 ```sh
 $ bingo/learn -test -analysis_type [ interval | taint ] -out_dir test-out $BENCH_NAME
 ```
+
+e.g. `bingo/learn -test -analysis_type interval -out_dir test-out -dl_from $PATH_TO_DL_FILE sort`
 
 Logs (`learn.log`) and output (`.dl` file) will be generated under `test-out` directory.
 One may run test with existing datalog rule file with option `-dl_from $PATH_TO_DATALOG_FILE`.
