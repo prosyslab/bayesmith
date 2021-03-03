@@ -176,8 +176,6 @@ let interval_benchmarks =
     "fribidi/1.0.7";
     "patch/2.7.1";
     "gzip/1.2.4a";
-    "bzip2/0.1";
-    "man/1.5h1";
   ]
 
 let taint_benchmarks =
