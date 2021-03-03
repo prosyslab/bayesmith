@@ -29,6 +29,8 @@ let is_parallel = ref false
 
 let is_test = ref false
 
+let force_rerun = ref false
+
 let use_baseline = ref false
 
 let baseline_iters = ref (-1)
@@ -497,36 +499,38 @@ let base_dir_of bench =
   |> Fun.flip Filename.concat (!analysis_type ^ "/")
 
 let find_reusable_timestamp current_rule_instance bench =
-  let base_dir = base_dir_of bench in
-  Sys.readdir base_dir |> Array.to_list
-  |> List.filter (fun s ->
-         let dir = Filename.concat base_dir s in
-         let { Unix.st_kind; _ } = Unix.lstat dir in
-         st_kind = S_DIR
-         && String.length s > 5
-         && String.sub s 0 (String.length "bnet-") = "bnet-")
-  |> List.find_opt (fun dir ->
-         let bnet_dir = Filename.concat base_dir dir in
-         let dl_file =
-           if !analysis_type = "interval" then
-             Filename.concat bnet_dir "BufferOverflow.dl"
-           else if !analysis_type = "taint" then
-             Filename.concat bnet_dir "IntegerOverflow.dl"
-           else assert false
-         in
-         let prob_file = Filename.concat bnet_dir "rule-prob.txt" in
-         let combined_dir =
-           Filename.concat base_dir
-             ("bingo_combined" ^ String.sub dir 4 (String.length dir - 4))
-         in
-         let done_file = Filename.concat combined_dir ".done" in
-         if
-           Sys.file_exists done_file && Sys.file_exists dl_file
-           && Sys.file_exists prob_file
-         then
-           let datalog = Datalog.of_file dl_file prob_file in
-           Datalog.eq current_rule_instance datalog
-         else false)
+  if !force_rerun then None
+  else
+    let base_dir = base_dir_of bench in
+    Sys.readdir base_dir |> Array.to_list
+    |> List.filter (fun s ->
+           let dir = Filename.concat base_dir s in
+           let { Unix.st_kind; _ } = Unix.lstat dir in
+           st_kind = S_DIR
+           && String.length s > 5
+           && String.sub s 0 (String.length "bnet-") = "bnet-")
+    |> List.find_opt (fun dir ->
+           let bnet_dir = Filename.concat base_dir dir in
+           let dl_file =
+             if !analysis_type = "interval" then
+               Filename.concat bnet_dir "BufferOverflow.dl"
+             else if !analysis_type = "taint" then
+               Filename.concat bnet_dir "IntegerOverflow.dl"
+             else assert false
+           in
+           let prob_file = Filename.concat bnet_dir "rule-prob.txt" in
+           let combined_dir =
+             Filename.concat base_dir
+               ("bingo_combined" ^ String.sub dir 4 (String.length dir - 4))
+           in
+           let done_file = Filename.concat combined_dir ".done" in
+           if
+             Sys.file_exists done_file && Sys.file_exists dl_file
+             && Sys.file_exists prob_file
+           then
+             let datalog = Datalog.of_file dl_file prob_file in
+             Datalog.eq current_rule_instance datalog
+           else false)
 
 (* Generate named_cons_all before execution of run.py *)
 let generate_named_cons env current_rule_instance =
@@ -1568,6 +1572,9 @@ let opts =
     ( "-test",
       Arg.Set is_test,
       "Run test on given benchmark, dl and rule_prob files" );
+    ( "-force_rerun",
+      Arg.Set force_rerun,
+      "Force re-run without using cached bingo results" );
     ( "-use_baseline",
       Arg.Set use_baseline,
       "Set baseline as evaluation criteria at each time" );
