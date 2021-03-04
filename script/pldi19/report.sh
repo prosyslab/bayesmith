@@ -34,5 +34,5 @@ function report() {
 }
 
 printf "%-20s%-20s%10s%15s\n" "Program" "Timestamp" "NumCons" "Iter"
-report "taint" "$TIMESTAMP" "${taint_benchmarks[@]}"
 report "interval" "$TIMESTAMP" "${interval_benchmarks[@]}"
+report "taint" "$TIMESTAMP" "${taint_benchmarks[@]}"
