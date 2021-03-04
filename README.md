@@ -37,3 +37,31 @@ $ script/pldi19/report.sh $TIMESTAMP
 ```
 
 e.g. `script/pldi19/report.sh baseline` will show statistics for baseline performace. Similarly, `script/pldi19/report.sh pldi` will show statistics for pldi21 submitted version performace.
+
+
+### Visualize Bayesian Network
+
+```sh
+$ bingo/visualizer $BNET_DIR
+```
+
+Above command shall prompt a shell starting with `visualizer> `. Then, one may run further commands to get the visuals. Here, we illustrate commonly used commands. For more information, just enter 'help' in the prompted shell as `visualizer> help`.
+
+Then, the following command will output an svg file showing partial BNet that shows common ancestor between two alarms:
+
+```sh
+visualizer> common $ALARM_1 $ALARM_2 $OUT_FILE_NAME
+```
+
+The following command will output an svg file showing partial BNet that shows derivation of a single alarm. :
+
+```sh
+visualizer> single $ALARM $OUT_FILE_NAME
+```
+
+By default, it will visualize up to 100 close nodes used for alarm derivation. As one may want to track more nodes, will use the following command:
+
+```sh
+visualizer> single $ALARM $SIZE $OUT_FILE_NAME
+```
+`$SIZE` describes the maximum number of nodes to visualize.
