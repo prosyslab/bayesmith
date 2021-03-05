@@ -130,7 +130,7 @@ def get_benchmarks():
 
 def get_label(alarm, is_pretty):
     if not is_pretty:
-        return "", "", alarm
+        return "", "", 6, alarm
     elif 'baseline' in alarm:
         return "dashed", "o", 6, "Bingo"
     else:
@@ -292,7 +292,8 @@ class Plotter:
             if not fname:
                 fname = self.benchmark + '.pdf'
             save_path = os.path.join(self.img_path, fname)
-            plt.savefig(save_path)
+            print('saved at', save_path)
+            plt.savefig(save_path, format='pdf')
 
     def show(self):
         if self.try_import_render_console():
