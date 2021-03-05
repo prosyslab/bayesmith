@@ -576,7 +576,7 @@ let generate_named_cons env current_rule_instance =
             current_rule_instance)
     env.benchmarks
 
-let run_bingo env dl_file current_rule_instance =
+let run_bingo env current_rule_instance =
   log "Run Bingo for all benchmarks";
   prerr_endline
     ("[" ^ env.current_timestamp ^ "] Run Bingo for all benchmarks started");
@@ -608,8 +608,6 @@ let run_bingo env dl_file current_rule_instance =
                    "--skip-generate-named-cons";
                    "--timestamp";
                    env.current_timestamp;
-                   "--datalog";
-                   dl_file;
                    Filename.concat benchmark_home bench;
                  |]
                  Unix.stdin devnull devnull
@@ -652,7 +650,7 @@ let run_all env =
   close_out dl_oc;
   BNet.generate_rule_prob_txt prob_txt_file current_rule_instance;
   generate_named_cons env current_rule_instance;
-  run_bingo env dl_file current_rule_instance
+  run_bingo env current_rule_instance
 
 let run_test env =
   let fake_env =
@@ -1652,7 +1650,7 @@ let main () =
   if !is_test then (
     if !dl_from = "" then
       failwith "One must at least specify a dl file to run test";
-    let test_env = update_current_timestamp initial_env in
+    let test_env = { initial_env with current_timestamp = !timestamp } in
     run_test test_env )
   else (
     ( if !use_baseline then
