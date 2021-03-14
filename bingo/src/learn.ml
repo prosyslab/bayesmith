@@ -11,6 +11,8 @@ let reuse = ref false
 
 let min_v = ref 0.1
 
+let alpha = ref 0.99
+
 let max_epoch = ref 100
 
 let out_dir = ref "learn-out"
@@ -608,6 +610,8 @@ let run_bingo env current_rule_instance =
                    "--skip-generate-named-cons";
                    "--timestamp";
                    env.current_timestamp;
+                   "--alpha";
+                   string_of_float !alpha;
                    Filename.concat benchmark_home bench;
                  |]
                  Unix.stdin devnull devnull
@@ -1576,6 +1580,10 @@ let opts =
     ( "-use_baseline",
       Arg.Set use_baseline,
       "Set baseline as evaluation criteria at each time" );
+    ( "-alpha",
+      Arg.Set_float alpha,
+      "Set alpha i.e. hyperparam. for learned rule firing prob. multiplier \
+       (default: 0.99)" );
   ]
 
 (* TODO *)

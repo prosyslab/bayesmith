@@ -227,8 +227,9 @@ def analyze(args, benchmark_list):
 
 
 def build_bnet(program, version, analysis_type, bnet_dir, skip_compress, mode,
-               em_rule):
+               em_rule, alpha):
     print("Building Bayesian Network to {}".format(bnet_dir))
+    print("alpha: {}".format(alpha))
     benchmark_dir = os.path.join(BENCHMARK_DIR, program)
     output_dir = os.path.join(benchmark_dir, version, "sparrow-out")
     command = [
@@ -240,7 +241,8 @@ def build_bnet(program, version, analysis_type, bnet_dir, skip_compress, mode,
     skip_compress = "YES" if skip_compress else "NO"
     command = [
         os.path.join(BINGO_DIR, "build-bnet.sh"), analysis_dir,
-        os.path.join(analysis_dir, bnet_dir, "Alarm.txt"), bnet_dir, skip_compress
+        os.path.join(analysis_dir, bnet_dir, "Alarm.txt"), bnet_dir,
+        skip_compress, alpha if alpha else "0.99"
     ]
     if mode == TRAIN_MODE:
         return
@@ -357,7 +359,7 @@ def rank(args, benchmark_list):
                 generate_named_cons(args, program, version, analysis_type,
                                     bnet_dir)
             build_bnet(program, version, analysis_type, bnet_dir,
-                       args.skip_compress, "RANK", None)
+                       args.skip_compress, "RANK", None, args.alpha)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_bingo(program, benchmark_dir, output_dir, analysis_type,
                       bnet_dir, suffix)
@@ -386,10 +388,9 @@ def em_train(args, benchmark_list):
         bnet_dir = 'bnet-' + suffix
         os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
                     exist_ok=True)
-        generate_named_cons(args, program, version, analysis_type,
-                                bnet_dir)
+        generate_named_cons(args, program, version, analysis_type, bnet_dir)
         build_bnet(program, version, analysis_type, bnet_dir, False,
-                       TRAIN_MODE, None)
+                   TRAIN_MODE, None)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_em_train_bingo(program, benchmark_dir, output_dir,
                                analysis_type, bnet_dir, suffix, args.fg_file)
@@ -418,11 +419,10 @@ def em_test(args, benchmark_list):
         bnet_dir = 'bnet-' + suffix
         os.makedirs(os.path.join(output_dir, analysis_type, bnet_dir),
                     exist_ok=True)
-        generate_named_cons(args, program, version, analysis_type,
-                            bnet_dir)
+        generate_named_cons(args, program, version, analysis_type, bnet_dir)
         rule_prob_file = os.path.join(PROJECT_HOME, args.rule_prob_file)
-        build_bnet(program, version, analysis_type, bnet_dir, False,
-                    TEST_MODE, rule_prob_file)
+        build_bnet(program, version, analysis_type, bnet_dir, False, TEST_MODE,
+                   rule_prob_file)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_em_test_bingo(program, benchmark_dir, output_dir,
                               analysis_type, bnet_dir, suffix)
@@ -498,6 +498,7 @@ def main():
     parser_rank.add_argument('--reuse', type=str)
     parser_rank.add_argument('--skip-generate-named-cons', action='store_true')
     parser_rank.add_argument('--timestamp', type=str)
+    parser_rank.add_argument('--alpha', type=str)
     parser_rank.add_argument('--datalog', type=str)
     parser_rank.add_argument('--skip-compress', action='store_true')
     parser_em_train = subparsers.add_parser('em-train')

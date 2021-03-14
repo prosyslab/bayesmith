@@ -46,8 +46,9 @@ export OP_TUPLE_FILENAME=$2
 export BNET=$3
 export SKIP_COMPRESS=$4
 export PYTHONHASHSEED=0 # to make python set deterministic
-IS_EM=$5
-RULE_PROB_FILE=$6
+ALPHA=$5
+IS_EM=$6
+RULE_PROB_FILE=$7
 EM_TEST="em-test"
 
 mkdir -p $PROGRAM_PATH/$BNET
@@ -95,6 +96,7 @@ else
       $OP_TUPLE_FILENAME \
       $PROGRAM_PATH/${BNET}/new-rule-prob.txt \
       $PROGRAM_PATH/${BNET}/named_cons_all.txt.cep \
+      $ALPHA \
       2>$PROGRAM_PATH/${BNET}/compress-cons-all.log
 
     $BINGO_DIR/cons_all2bnet.py $PROGRAM_PATH/${BNET}/bnet-dict.out narrowand narrowor \

@@ -68,9 +68,9 @@ for t in allInputTuples:
                 relName, ruleName))
         elif relName not in relNameRuleNameMap:
             i = 0
-            while 'R{0}'.format(i) in allRuleNames.values():
+            while 'R{0}{1}'.format(relName, i) in allRuleNames.values():
                 i = i + 1
-            ruleName = 'R{0}'.format(i)
+            ruleName = 'R{0}{1}'.format(relName, i)
             relNameRuleNameMap[relName] = ruleName
             logging.info('Associating relation {0} with rule {1}.'.format(
                 relName, ruleName))

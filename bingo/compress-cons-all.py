@@ -21,10 +21,12 @@ import re
 import sys
 
 consAllFileName, ruleProbFileName, defaultRuleProb, baseQueriesFileName, \
-newRuleProbFileName, outputConsAllFileName = sys.argv[1:]
+newRuleProbFileName, outputConsAllFileName, alpha = sys.argv[1:]
 
 defaultRuleProb = float(defaultRuleProb)
+alpha = float(alpha)
 assert 0 <= defaultRuleProb and defaultRuleProb <= 1
+assert 0 <= alpha and alpha <= 1
 
 random.seed(0)
 logging.basicConfig(level=logging.INFO, \
@@ -56,7 +58,12 @@ for clause in allClauses:
     elif ruleName == 'Rneps':
         ruleProbs[ruleName] = 1.0 - float(os.environ['EPS'])
     elif ruleName not in ruleProbs:
-        ruleProbs[ruleName] = defaultRuleProb
+        if ruleName.startswith('DU') or ruleName.startswith(
+                'RDU') or ruleName.startswith('Alarm') or ruleName.startswith(
+                    'RTrue') or ruleName.startswith('RFalse'):
+            ruleProbs[ruleName] = defaultRuleProb
+        else:
+            ruleProbs[ruleName] = alpha
 
 
 def makeNewRule(ruleProb):
