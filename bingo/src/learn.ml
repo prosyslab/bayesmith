@@ -39,6 +39,8 @@ let baseline_iters = ref (-1)
 
 let baseline_iters_lst = ref []
 
+let targets = ref []
+
 (* Default constants *)
 let prob = 0.99
 
@@ -201,38 +203,46 @@ let get_benchmark_pool () =
   | "taint" -> taint_benchmarks
   | _ -> failwith "Unsupported analysis type"
 
-let leave_one_out target_bench =
-  let len = String.length target_bench in
+let leave_one_out target_benchs =
+  let num_target_benchs = List.length target_benchs in
   let benchmark_pool = get_benchmark_pool () in
   let filtered =
     List.filter
       (fun b ->
-        let b_name =
-          try String.sub b 0 len with Invalid_argument _ -> "NO_MATCH"
-        in
-        b_name <> target_bench)
+        List.for_all
+          (fun target_bench ->
+            let len = String.length target_bench in
+            let b_name =
+              try String.sub b 0 len with Invalid_argument _ -> "NO_MATCH"
+            in
+            b_name <> target_bench)
+          target_benchs)
       benchmark_pool
   in
   let num_all = List.length benchmark_pool in
   let num_filtered = List.length filtered in
-  if num_all - num_filtered = 1 then filtered
-  else failwith (target_bench ^ " not in benchmark list")
+  if num_all - num_filtered = num_target_benchs then filtered
+  else failwith (String.concat " " target_benchs ^ " not in benchmark list")
 
-let get_test_benchmark target_bench =
-  let len = String.length target_bench in
+let get_test_benchmark target_benchs =
+  let num_target_benchs = List.length target_benchs in
   let benchmark_pool = get_benchmark_pool () in
   let filtered =
     List.filter
       (fun b ->
-        let b_name =
-          try String.sub b 0 len with Invalid_argument _ -> "NO_MATCH"
-        in
-        b_name = target_bench)
+        List.exists
+          (fun target_bench ->
+            let len = String.length target_bench in
+            let b_name =
+              try String.sub b 0 len with Invalid_argument _ -> "NO_MATCH"
+            in
+            b_name = target_bench)
+          target_benchs)
       benchmark_pool
   in
   let num_filtered = List.length filtered in
-  if num_filtered = 1 then filtered
-  else failwith (target_bench ^ " not in benchmark list")
+  if num_filtered = num_target_benchs then filtered
+  else failwith (String.concat " " target_benchs ^ " not in benchmark list")
 
 (* Logging *)
 let log_file = ref None
@@ -347,9 +357,13 @@ module Evaluation = struct
             ( "sparrow-out/" ^ !analysis_type ^ "/bingo_combined-"
             ^ env.current_timestamp )
         in
-        Sys.readdir combined_dir |> Array.to_list
-        |> List.filter (fun x -> x <> "init.out" && x <> ".done")
-        |> List.length)
+        let num_iter =
+          Sys.readdir combined_dir |> Array.to_list
+          |> List.filter (fun x -> x <> "init.out" && x <> ".done")
+          |> List.length
+        in
+        log "- Test score of %s : %d" bench num_iter;
+        num_iter)
       env.benchmarks
 
   let run env =
@@ -660,15 +674,15 @@ let run_test env =
   let fake_env =
     {
       empty_env with
-      benchmarks = get_test_benchmark !target;
+      benchmarks = get_test_benchmark !targets;
       current_timestamp = env.current_timestamp;
       current_rules = env.current_rules;
     }
   in
-  log "========== TEST START : %s ==========" !target;
+  log "========== TEST START : %s ==========" (String.concat " " !targets);
   run_all fake_env;
   Evaluation.run fake_env |> ignore;
-  log "=========== TEST END : %s ===========" !target
+  log "=========== TEST END : %s ===========" (String.concat " " !targets)
 
 let read_alarms bnet_dir =
   let ground_truth = Filename.concat bnet_dir "GroundTruth.txt" in
@@ -1618,7 +1632,7 @@ let set_baseline base_rules =
       {
         empty_env with
         current_rules = base_rules;
-        benchmarks = leave_one_out !target;
+        benchmarks = leave_one_out !targets;
       }
   in
   run_all base_env;
@@ -1638,9 +1652,9 @@ let report env =
 
 let main () =
   Random.self_init ();
-  Arg.parse opts (fun x -> target := x) "";
+  Arg.parse opts (fun x -> targets := !targets @ [ x ]) "";
   initialize ();
-  log "Chosen program: %s" !target;
+  log "Chosen program: %s" (String.concat " " !targets);
   let initial_rules =
     if !dl_from <> "" then (Datalog.of_file !dl_from !rule_prob_from).rules
     else if !analysis_type = "interval" then Buffer_rules.buffer_overflow_rules
@@ -1652,7 +1666,7 @@ let main () =
       empty_env with
       current_timestamp = "baseline";
       current_rules = initial_rules;
-      benchmarks = leave_one_out !target;
+      benchmarks = leave_one_out !targets;
     }
   in
   if !is_test then (
