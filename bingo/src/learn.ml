@@ -1054,9 +1054,9 @@ let type_of_alarm features alarm =
   else if StringSet.mem alarm (features.alarm_strcpy |> fst) then
     (alarm_strcpy, features.alarm_strcpy |> snd)
   else if StringSet.mem alarm (features.alarm_memchr |> fst) then
-    (alarm_strcpy, features.alarm_strcpy |> snd)
+    (alarm_memchr, features.alarm_memchr |> snd)
   else if StringSet.mem alarm (features.alarm_strncmp |> fst) then
-    (alarm_strcpy, features.alarm_strcpy |> snd)
+    (alarm_strncmp, features.alarm_strncmp |> snd)
   else if StringSet.mem alarm (features.alarm_buffer_overrun_lib |> fst) then
     (alarm_buffer_overrun_lib, features.alarm_buffer_overrun_lib |> snd)
   else if StringSet.mem alarm (features.alarm_div_exp |> fst) then
@@ -1410,6 +1410,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
               ^ " in SparrowAlarm.facts" );
             exit 1
       in
+      log "target alarm: %s" target_alarm;
       let target_alarm_type, alarm_arity =
         type_of_alarm features target_alarm
       in
