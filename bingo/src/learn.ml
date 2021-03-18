@@ -180,7 +180,6 @@ let interval_benchmarks =
     "cflow/1.5";
     "bc/1.06";
     "fribidi/1.0.7";
-    "patch/2.7.1";
     "gzip/1.2.4a";
   ]
 
