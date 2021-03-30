@@ -27,7 +27,7 @@ echo "Build Bingo"
 pushd bingo/prune-cons
 make
 popd
-opam install -y batteries linenoise
+opam install -y batteries linenoise yojson ocamlgraph
 pushd bingo
 make
 popd
