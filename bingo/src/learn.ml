@@ -9,7 +9,7 @@ module Tuple = Datalog.Tuple
 (* Options *)
 let reuse = ref false
 
-let min_v = ref 0.1
+let min_v = ref 0.0
 
 let alpha = ref 0.99
 
@@ -175,6 +175,7 @@ let interval_benchmarks =
     "readelf/2.24";
     "grep/2.19";
     "sed/4.3";
+    "patch/2.7.1";
     "sort/7.2";
     "tar/1.28";
     "cflow/1.5";
