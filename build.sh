@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git submodule update --init --recursive
+
 set -e
 
 echo "Build Souffle"
@@ -30,4 +32,8 @@ popd
 opam install -y batteries linenoise yojson ocamlgraph
 pushd bingo
 make
+popd
+
+pushd sparrow
+./build.sh
 popd
