@@ -211,10 +211,9 @@ class Plotter:
             cons_all2bnet_path = get_cons_all2bnet_path(self.benchmark, timestamp)
             with open(cons_all2bnet_path, 'r') as f:
                 lines = f.readlines()
-                num_clause = lines[0].split(' ')[-2]
+                num_clauses = lines[0].split(' ')[-2]
                 num_tuples = lines[1].split(' ')[-2]
-            print("[Info] # Clauses at " + timestamp + " : " + num_clause)
-            print("[Info] # Tuples at " + timestamp + " : " + num_tuples)
+            print("[Info] @{} #T, #C: {}\t&\t{}".format(timestamp, num_tuples, num_clauses))
 
 
     def make_dir(self):
@@ -245,10 +244,10 @@ class Plotter:
         for ts, vc_lst in dic.items():
             print("[Info] # VC in " + ts + ": " + str(len(vc_lst)))
             if len(vc_lst) == 0:
-                avg = "NO VCs"
+                avg = "0.0"
             else:
                 avg = sum(vc_lst) / len(vc_lst)
-            print("[Info] Avg. VC size in " + ts + ": " + str(avg))
+            print("[Info] @{} #FG, Avg. VC size :{}\t&\t{}".format(ts, str(len(vc_lst)), str(avg)))
 
     def render_or(self, is_saving=True, fname=None):
         """Render plot by traversing over history of each alarm.
