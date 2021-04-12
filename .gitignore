@@ -29,6 +29,7 @@ history.txt
 
 *.dot
 *.svg
+*.pdf
 
 learn.log
 rules
