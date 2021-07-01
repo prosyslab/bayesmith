@@ -1,1 +1,53 @@
-[{"project": "gzip-1.2.4a", "file": "gzip.c", "line": 515}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1005}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1053}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1056}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1070}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1133}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1434}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1439}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1467}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1502}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1504}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1685}, {"project": "gzip-1.2.4a", "file": "gzip.c", "line": 1688}]
+[{
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 524
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1009
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1053
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1062
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1076
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1133
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1434
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1439
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1467
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1502
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1504
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1686
+}, {
+  "project": "gzip-1.2.4a",
+  "file": "gzip.c",
+  "line": 1695
+}]
