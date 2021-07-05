@@ -2,18 +2,17 @@ module F = Format
 module StringSet = Set.Make (String)
 
 let usage =
-  "Usage: generator bnet [ taint | interval ] [ sparrow-out dir path ] [ bnet \
-   dir name ] [ dl | ml ] [ dl file path ]"
-
-let rule_src_opts = [ "dl"; "ml" ] |> StringSet.of_list
+  "Usage: generator [ taint | interval ] [ sparrow-out dir path ] [ bnet dir \
+   name ]"
 
 let check_argv args =
-  if Array.length args >= 4 then
-    if not (StringSet.mem args.(5) rule_src_opts) then (
-      prerr_endline usage;
-      exit 1 )
+  if Array.length args <> 4 then (
+    prerr_endline usage;
+    exit 1 )
+  else ()
 
 let main argv =
+  check_argv argv;
   let analysis_type = argv.(1) in
   let sparrow_out_dir = argv.(2) in
   let bnet_dir = argv.(3) in

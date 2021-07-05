@@ -680,7 +680,8 @@ let pp fmt p =
   F.fprintf fmt "\n";
   RuleSet.pp fmt p.rules;
   F.fprintf fmt "\n";
-  RuleSet.pp fmt p.derive_rules
+  RuleSet.pp fmt p.derive_rules;
+  F.fprintf fmt "\n"
 
 let make rules =
   let outputs, inputs =
@@ -701,6 +702,11 @@ let make rules =
   if RelationMap.is_empty outputs then prerr_endline "EMPTY";
   Rule.derive_id := -1;
   { rules; derive_rules = RuleSet.map Rule.derive_rule rules; inputs; outputs }
+
+let remove_deriv_tok head =
+  if Str.string_match (Str.regexp "Deriv_\\(.*\\)") head 0 then
+    Str.matched_group 1 head
+  else ""
 
 let of_file dl_file_path rule_prob_txt_path =
   let rec read_dl ic lines deriv_lines =
@@ -755,11 +761,6 @@ let of_file dl_file_path rule_prob_txt_path =
       (fun (s1, s2) line1 line2 ->
         let head, tail = get_head_and_tail line1 in
         let derive_head, derive_tail = get_head_and_tail line2 in
-        let remove_deriv_tok head =
-          if Str.string_match (Str.regexp "Deriv_\\(.*\\)") head 0 then
-            Str.matched_group 1 head
-          else ""
-        in
         let head_key = remove_deriv_tok derive_head.name in
         let prob =
           try RuleProbMap.find head_key rule_prob_map with Not_found -> 0.99

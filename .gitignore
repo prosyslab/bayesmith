@@ -9,6 +9,7 @@ bingo/prune-cons/keep-derivable
 bingo/driver
 bingo/generator
 bingo/visualizer
+bingo/equipTDU
 
 benchmarks/*/*/sparrow-out
 

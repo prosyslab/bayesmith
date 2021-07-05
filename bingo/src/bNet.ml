@@ -373,3 +373,100 @@ let generate_named_cons sparrow_out analysis_type bnet_dir datalog =
       close_in ic)
     datalog.Datalog.derive_rules;
   close_out oc_cons
+
+let tdu = "TDUPath"
+
+let dup = "DUPath"
+
+let du_2_tdu tups =
+  List.map
+    (fun tup ->
+      if tup.Datalog.Tuple.name = dup then { tup with name = tdu } else tup)
+    tups
+
+let equip_tdupath datalog =
+  try
+    if Datalog.RelationMap.find tdu datalog.Datalog.outputs = 2 then datalog
+    else failwith "Error: TDUPath already exists while the arity is not 2"
+  with Not_found ->
+    (* handle outputs *)
+    let new_outputs = Datalog.RelationMap.add tdu 2 datalog.outputs in
+    (* handle rules *)
+    let dup_rules, alarm_rules =
+      Datalog.RuleSet.fold
+        (fun rule (drs, ars) ->
+          if rule.head.name = dup then (Datalog.RuleSet.add rule drs, ars)
+          else (drs, Datalog.RuleSet.add rule ars))
+        datalog.rules
+        (Datalog.RuleSet.empty, Datalog.RuleSet.empty)
+    in
+    let tdu_rules =
+      Datalog.RuleSet.fold
+        (fun r s ->
+          let nhead = { r.head with name = tdu } in
+          let ntail = r.head :: du_2_tdu r.tail in
+          let nr = { r with head = nhead; tail = ntail } in
+          Datalog.RuleSet.add nr s)
+        dup_rules Datalog.RuleSet.empty
+    in
+    let t_alarm_rules =
+      Datalog.RuleSet.map
+        (fun arule ->
+          let natail = du_2_tdu arule.tail in
+          { arule with tail = natail })
+        alarm_rules
+    in
+    let new_rules =
+      tdu_rules
+      |> Datalog.RuleSet.union dup_rules
+      |> Datalog.RuleSet.union t_alarm_rules
+    in
+    (* handle derive_rules *)
+    let dup_derive_rules, alarm_derive_rules =
+      Datalog.RuleSet.fold
+        (fun rule (drs, ars) ->
+          let rname = Datalog.remove_deriv_tok rule.head.name in
+          let is_alarm =
+            String.length rname >= 5 && String.sub rname 0 5 = "Alarm"
+          in
+          if is_alarm then (drs, Datalog.RuleSet.add rule ars)
+          else (Datalog.RuleSet.add rule drs, ars))
+        datalog.derive_rules
+        (Datalog.RuleSet.empty, Datalog.RuleSet.empty)
+    in
+    let num_deriv_rules = Datalog.RuleSet.cardinal datalog.derive_rules in
+    let tdu_derive_rules, _ =
+      Datalog.RuleSet.fold
+        (fun r (s, n) ->
+          let nhead = { r.head with name = "Deriv_" ^ tdu ^ string_of_int n } in
+          let ntail =
+            {
+              r.head with
+              name = dup;
+              vars = [ List.nth r.head.vars 0; List.nth r.head.vars 1 ];
+            }
+            :: du_2_tdu r.tail
+          in
+          let nr = { r with head = nhead; tail = ntail } in
+          (Datalog.RuleSet.add nr s, n + 1))
+        dup_derive_rules
+        (Datalog.RuleSet.empty, num_deriv_rules)
+    in
+    let t_alarm_derive_rules =
+      Datalog.RuleSet.map
+        (fun arule ->
+          let natail = du_2_tdu arule.tail in
+          { arule with tail = natail })
+        alarm_derive_rules
+    in
+    let new_derive_rules =
+      tdu_derive_rules
+      |> Datalog.RuleSet.union dup_derive_rules
+      |> Datalog.RuleSet.union t_alarm_derive_rules
+    in
+    {
+      datalog with
+      outputs = new_outputs;
+      rules = new_rules;
+      derive_rules = new_derive_rules;
+    }
