@@ -103,7 +103,7 @@ sparrow_options = {
     "wget": [
         "-inline", "alloc", "-filter_file", "hash.c", "-filter_file",
         "html-parse.c", "-filter_file", "utils.c", "-filter_file", "url.c",
-        "-filter_allocsite", " _G_", "-filter_allocsite", "extern",
+        "-filter_allocsite", "extern",
         "-filter_allocsite", "uri_", "-filter_allocsite", "url_",
         "-filter_allocsite", "fd_read_hunk", "-filter_allocsite", "main",
         "-filter_allocsite", "gethttp", "-filter_allocsite", "strdupdelim",
