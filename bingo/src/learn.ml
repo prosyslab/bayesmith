@@ -602,7 +602,7 @@ let run_bingo env current_rule_instance =
          | Some dir ->
              let suffix = String.sub dir 4 (String.length dir - 4) in
              let combined_dir = "bingo_combined" ^ suffix in
-             let stat_file = "bingo_stats" ^ suffix in
+             let stat_file = "bingo_stats" ^ suffix ^ ".txt" in
              log "- Reusable Bingo run of %s found" bench;
              let base_dir = base_dir_of bench in
              let src_dir = Filename.concat base_dir combined_dir in
@@ -612,7 +612,8 @@ let run_bingo env current_rule_instance =
              in
              let src_file = Filename.concat base_dir stat_file in
              let dst_file =
-               Filename.concat base_dir ("bingo_stats-" ^ env.current_timestamp)
+               Filename.concat base_dir
+                 ("bingo_stats-" ^ env.current_timestamp ^ ".txt")
              in
              if src_dir = dst_dir then None
              else (
@@ -689,7 +690,20 @@ let run_test ?(is_final = false) env =
   Evaluation.run fake_env |> ignore;
   log "=========== TEST END : %s ===========" (String.concat " " !targets)
 
-let run_final = run_test ~is_final:true
+let run_final env =
+  (* remove existing final *)
+  let test_benchmarks = get_test_benchmark !targets in
+  let remove_prev_links target =
+    let base_dir = base_dir_of target in
+    ( try Unix.unlink (base_dir ^ "bingo_stats-final.txt")
+      with Unix.Unix_error (_, _, _) -> () );
+    ( try Unix.unlink (base_dir ^ "bingo_combined-final")
+      with Unix.Unix_error (_, _, _) -> () );
+    try Unix.unlink (base_dir ^ "bnet-final")
+    with Unix.Unix_error (_, _, _) -> ()
+  in
+  List.iter remove_prev_links test_benchmarks;
+  run_test ~is_final:true env
 
 let read_alarms bnet_dir =
   let ground_truth = Filename.concat bnet_dir "GroundTruth.txt" in
@@ -1629,6 +1643,11 @@ let rec learning env =
 let initialize () =
   ( try Unix.mkdir !out_dir 0o775
     with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
+  let custom_dir = String.concat "/" !targets in
+  let new_out_dir = !out_dir ^ "/" ^ custom_dir in
+  ( try Unix.mkdir new_out_dir 0o775
+    with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
+  out_dir := new_out_dir;
   prerr_endline ("Logging to " ^ !out_dir);
   log_file := Filename.concat !out_dir "learn.log" |> open_out |> Option.some;
   log_formatter := Option.map F.formatter_of_out_channel !log_file
