@@ -1640,7 +1640,7 @@ let rec learning env =
           log "No more possible refinement";
           env ) )
 
-let initialize () =
+let initialize is_test =
   ( try Unix.mkdir !out_dir 0o775
     with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
   let custom_dir = String.concat "/" !targets in
@@ -1649,7 +1649,8 @@ let initialize () =
     with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
   out_dir := new_out_dir;
   prerr_endline ("Logging to " ^ !out_dir);
-  log_file := Filename.concat !out_dir "learn.log" |> open_out |> Option.some;
+  let log_filename = if is_test then "test.log" else "learn.log" in
+  log_file := Filename.concat !out_dir log_filename |> open_out |> Option.some;
   log_formatter := Option.map F.formatter_of_out_channel !log_file
 
 let set_baseline base_rules =
@@ -1681,7 +1682,7 @@ let report env =
 let main () =
   Random.self_init ();
   Arg.parse opts (fun x -> targets := !targets @ [ x ]) "";
-  initialize ();
+  initialize !is_test;
   log "Chosen program: %s" (String.concat " " !targets);
   let initial_rules =
     if !dl_from <> "" then (Datalog.of_file !dl_from !rule_prob_from).rules
