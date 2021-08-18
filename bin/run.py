@@ -8,7 +8,8 @@ import os
 import subprocess
 
 from datetime import datetime
-from github import Github
+# TODO: uncomment if needed
+# from github import Github
 
 PROJECT_HOME = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 BENCHMARK_DIR = os.path.join(PROJECT_HOME, 'benchmarks')
