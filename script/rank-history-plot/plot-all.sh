@@ -6,7 +6,7 @@ PLOT_BIN=$PLOT_DIR/plot.py
 T1=$1
 T2=$2
 
-source $(dirname "${BASH_SOURCE[0]}")/benchmark.sh
+source $PROJECT_HOME/script/bingo/benchmark.sh
 source $PLOT_DIR/env/bin/activate
 
 function plot() {

@@ -12,7 +12,7 @@ import numpy as np
 BASE_DIR = os.path.dirname(__file__)
 FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
 BENCH_TXT = os.path.join(BASE_DIR, "benchmarks.txt")
-MIN_V = 0.01
+MIN_V = 0.0
 PRETTY_DST = "images-final"
 
 
@@ -31,7 +31,8 @@ def get_benchmark_info(benchmark):
     # Read sparrow-config.json
     with open(FACTS_TXT, 'r') as f:
         benchmarks_dir = f.read().strip()
-        sparrow_config = os.path.join(benchmarks_dir, benchmark, 'sparrow-config.json')
+        sparrow_config = os.path.join(benchmarks_dir, benchmark,
+                                      'sparrow-config.json')
         with open(sparrow_config, 'r') as g:
             data = json.load(g)
             analysis_type = data['analysis_type']
@@ -69,14 +70,15 @@ def get_alarm_path(benchmark):
         with open(FACTS_TXT, 'r') as f:
             benchmarks_dir = f.read().strip()
             alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                     'sparrow-out', atyp,
-                                     'bnet-baseline', 'Alarm.txt')
+                                      'sparrow-out', atyp, 'bnet-baseline',
+                                      'Alarm.txt')
             return alarm_path
     except FileNotFoundError as e:
         print('Error: ', e)
         print('Error: Check if facts.txt exists')
         print('Error: Make sure your configuration succeeds')
         exit(1)
+
 
 def get_cons_all2bnet_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
@@ -84,8 +86,8 @@ def get_cons_all2bnet_path(benchmark, timestamp):
         with open(FACTS_TXT, 'r') as f:
             benchmarks_dir = f.read().strip()
             alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                     'sparrow-out', atyp,
-                                     'bnet-' + timestamp, 'cons_all2bnet.log')
+                                      'sparrow-out', atyp, 'bnet-' + timestamp,
+                                      'cons_all2bnet.log')
             return alarm_path
     except FileNotFoundError as e:
         print('Error: ', e)
@@ -93,14 +95,15 @@ def get_cons_all2bnet_path(benchmark, timestamp):
         print('Error: Make sure your configuration succeeds')
         exit(1)
 
+
 def get_bingo_stat_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
     try:
         with open(FACTS_TXT, 'r') as f:
             benchmarks_dir = f.read().strip()
             alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                     'sparrow-out', atyp,
-                                     'bingo_stats-' + timestamp + '.txt')
+                                      'sparrow-out', atyp,
+                                      'bingo_stats-' + timestamp + '.txt')
             return alarm_path
     except FileNotFoundError as e:
         print('Error: ', e)
@@ -113,6 +116,7 @@ def get_num_alarms(benchmark):
     txt_path = get_alarm_path(benchmark)
     with open(txt_path, 'r') as f:
         return len(f.readlines())
+
 
 def get_img_path(timestamps, is_pretty):
     if is_pretty:
@@ -128,6 +132,7 @@ def get_benchmarks():
     df = pd.read_csv(BENCH_TXT, header=0, usecols=['Name'])
     return df['Name'].to_list()
 
+
 def get_label(alarm, is_pretty):
     if not is_pretty:
         return "", "", 6, alarm
@@ -135,6 +140,26 @@ def get_label(alarm, is_pretty):
         return "dashed", "o", 6, "Bingo"
     else:
         return "solid", "*", 8, "BayeSmith"
+
+
+def give_step_size(max_val):
+    approx_interval_size = int(max_val / 5)
+    if approx_interval_size <= 3:
+        return 2
+    if approx_interval_size <= 5:
+        return 5
+    elif approx_interval_size <= 10:
+        return 10
+    elif approx_interval_size <= 20:
+        return 20
+    elif approx_interval_size <= 50:
+        return 50
+    elif approx_interval_size <= 100:
+        return 100
+    elif approx_interval_size <= 200:
+        return 200
+    else:
+        return 500
 
 
 class Plotter:
@@ -202,19 +227,23 @@ class Plotter:
     def compute_avg_bingo_feedbk_time(self):
         for timestamp in self.timestamps:
             bingo_stat_path = get_bingo_stat_path(self.benchmark, timestamp)
-            df = pd.read_csv(bingo_stat_path, sep='\t', header=0, usecols=['Time(s)'])
+            df = pd.read_csv(bingo_stat_path,
+                             sep='\t',
+                             header=0,
+                             usecols=['Time(s)'])
             print("[Info] Avg Bingo feedback time at " + timestamp + ":")
             print(df.mean())
 
     def measure_bnet_size(self):
         for timestamp in self.timestamps:
-            cons_all2bnet_path = get_cons_all2bnet_path(self.benchmark, timestamp)
+            cons_all2bnet_path = get_cons_all2bnet_path(
+                self.benchmark, timestamp)
             with open(cons_all2bnet_path, 'r') as f:
                 lines = f.readlines()
                 num_clauses = lines[0].split(' ')[-2]
                 num_tuples = lines[1].split(' ')[-2]
-            print("[Info] @{} #T, #C: {}\t&\t{}".format(timestamp, num_tuples, num_clauses))
-
+            print("[Info] @{} #T, #C: {}\t&\t{}".format(
+                timestamp, num_tuples, num_clauses))
 
     def make_dir(self):
         """Make a directory where plots are being saved.
@@ -226,28 +255,32 @@ class Plotter:
                 print('Error: ', e)
                 exit(1)
 
-
     def count_vc(self):
         dic = {}
+        init_rank_dic = {}
         for alarm, _ in self.rank_history.items():
             ts = alarm.split('@')[-1]
             dic[ts] = []
+            init_rank_dic[ts] = 0
         for alarm, rank in self.rank_history.items():
             temp = 0
+            ts = alarm.split('@')[-1]
+            init_rank_dic[ts] += rank[0]
             for i in range(len(rank) - 1):
                 diff = rank[i + 1] - rank[i]
                 # if diff > 0:
                 vc_size = diff / float(self.num_alarms)
                 if vc_size > MIN_V:
-                    ts = alarm.split('@')[-1]
-                    dic[ts] += [ diff ]
+                    dic[ts] += [diff]
         for ts, vc_lst in dic.items():
             print("[Info] # VC in " + ts + ": " + str(len(vc_lst)))
             if len(vc_lst) == 0:
                 avg = "0.0"
             else:
                 avg = sum(vc_lst) / len(vc_lst)
-            print("[Info] @{} #FG, Avg. VC size :{}\t&\t{}".format(ts, str(len(vc_lst)), str(avg)))
+            print("[Info] @{} Init. rank: {}".format(ts, init_rank_dic[ts]))
+            print("[Info] @{} #FG, Avg. VC size :{}\t&\t{}".format(
+                ts, str(len(vc_lst)), str(avg)))
 
     def render_or(self, is_saving=True, fname=None):
         """Render plot by traversing over history of each alarm.
@@ -255,14 +288,18 @@ class Plotter:
         It takes save option into account on demand.
         """
         plt.rcParams['axes.titlepad'] = 10
-        plt.rcParams['xtick.major.pad'] = 0
-        plt.rcParams['ytick.major.pad'] = 0
+        plt.rcParams['xtick.major.pad'] = 15
+        plt.rcParams['ytick.major.pad'] = 15
         plt.rcParams['xtick.labelsize'] = 20
         plt.rcParams['ytick.labelsize'] = 20
+        #plt.rcParams['xtick.major.width'] = 5
+        #plt.rcParams['ytick.major.width'] = 5
         plt.rcParams['legend.fontsize'] = 25
-        plt.figure(figsize=(11.3, 10))
+        plt.figure(figsize=(21.8, 18))
         pos = '111'
         plt.subplot(pos)
+        x_max = 0
+        y_max = 0
         if self.is_pretty:
             new_dict = {}
             for alarm in reversed(list(self.rank_history.keys())):
@@ -273,20 +310,51 @@ class Plotter:
                 else:
                     new_dict[ts] = rank
             for timestamp, rank in new_dict.items():
-                linestyle, marker, markersize, label = get_label(timestamp, self.is_pretty)
-                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, markevery=5, label=label, linewidth=3)
+                if x_max < len(rank):
+                    x_max = len(rank)
+                if y_max < max(rank):
+                    y_max = max(rank)
+                linestyle, marker, markersize, label = get_label(
+                    timestamp, self.is_pretty)
+                plt.plot(rank,
+                         linestyle=linestyle,
+                         marker=marker,
+                         markersize=markersize,
+                         markevery=5,
+                         label=label,
+                         linewidth=5)
         else:
             for alarm in reversed(list(self.rank_history.keys())):
                 rank = self.rank_history[alarm]
-                linestyle, marker, markersize, label = get_label(alarm, self.is_pretty)
-                plt.plot(rank, linestyle=linestyle, marker=marker, markersize=markersize, markevery=5, label=label, linewidth=3)
-        plt.ylabel('Rank', size=30)
-        plt.xlabel('User interaction', size=30)
-        plt.xticks(size=25)
-        plt.yticks(size=25)
-        plt.legend(loc='upper right', borderaxespad=0.5, fancybox=True, fontsize=30)
-        plt.suptitle(self.benchmark, fontsize=35)
-        plt.subplots_adjust(top=0.9, right=0.97, bottom=0.1, wspace = 0.25)
+                if x_max < len(rank):
+                    x_max = len(rank)
+                if y_max < max(rank):
+                    y_max = max(rank)
+                linestyle, marker, markersize, label = get_label(
+                    alarm, self.is_pretty)
+                plt.plot(rank,
+                         linestyle=linestyle,
+                         marker=marker,
+                         markersize=markersize,
+                         markevery=5,
+                         label=label,
+                         linewidth=5)
+        #plt.ylabel('Rank', size=100, labelpad=20)
+        plt.ylabel('Rank', size=80, labelpad=20)
+        #plt.xlabel('# Interactions', size=100, labelpad=20)
+        plt.xlabel('# Interactions', size=80, labelpad=20)
+        plt.xticks(np.arange(0, x_max, give_step_size(x_max)), size=70)
+        plt.yticks(size=70)
+        plt.legend(loc='upper right',
+                   borderaxespad=0.5,
+                   fancybox=True,
+                   fontsize=75)
+        plt.suptitle(self.benchmark, fontsize=100, x=0.6)
+        plt.subplots_adjust(left=0.2,
+                            top=0.9,
+                            right=0.97,
+                            bottom=0.15,
+                            wspace=0.25)
         if is_saving:
             if not fname:
                 fname = self.benchmark + '.pdf'
