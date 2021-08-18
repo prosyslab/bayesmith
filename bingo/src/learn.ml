@@ -600,9 +600,9 @@ let run_bingo env current_rule_instance =
   |> List.map (fun bench ->
          match find_reusable_timestamp current_rule_instance bench with
          | Some dir ->
-             let combined_dir =
-               "bingo_combined" ^ String.sub dir 4 (String.length dir - 4)
-             in
+             let suffix = String.sub dir 4 (String.length dir - 4) in
+             let combined_dir = "bingo_combined" ^ suffix in
+             let stat_file = "bingo_stats" ^ suffix in
              log "- Reusable Bingo run of %s found" bench;
              let base_dir = base_dir_of bench in
              let src_dir = Filename.concat base_dir combined_dir in
@@ -610,9 +610,14 @@ let run_bingo env current_rule_instance =
                Filename.concat base_dir
                  ("bingo_combined-" ^ env.current_timestamp)
              in
+             let src_file = Filename.concat base_dir stat_file in
+             let dst_file =
+               Filename.concat base_dir ("bingo_stats-" ^ env.current_timestamp)
+             in
              if src_dir = dst_dir then None
              else (
                Unix.symlink src_dir dst_dir;
+               Unix.symlink src_file dst_file;
                None )
          | None ->
              log "- Run %s" bench;
