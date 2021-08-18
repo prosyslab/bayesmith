@@ -670,12 +670,12 @@ let run_all env =
   generate_named_cons env current_rule_instance;
   run_bingo env current_rule_instance
 
-let run_test env =
+let run_test ?(is_final = false) env =
   let fake_env =
     {
       empty_env with
       benchmarks = get_test_benchmark !targets;
-      current_timestamp = env.current_timestamp;
+      current_timestamp = (if is_final then "final" else env.current_timestamp);
       current_rules = env.current_rules;
     }
   in
@@ -683,6 +683,8 @@ let run_test env =
   run_all fake_env;
   Evaluation.run fake_env |> ignore;
   log "=========== TEST END : %s ===========" (String.concat " " !targets)
+
+let run_final = run_test ~is_final:true
 
 let read_alarms bnet_dir =
   let ground_truth = Filename.concat bnet_dir "GroundTruth.txt" in
@@ -1645,6 +1647,7 @@ let finalize () =
   match !log_file with Some log_file -> close_out log_file | None -> ()
 
 let report env =
+  run_final env;
   log "========== Report ==========";
   log "  - Total trials: %d" (List.length env.history);
   List.iter
