@@ -1,0 +1,135 @@
+.type Node <: symbol
+
+.decl Alarm(v0: Node, v1: Node)
+.decl AlarmAllocSize(v0: Node, v1: Node)
+.decl AlarmPrintf(v0: Node, v1: Node)
+.decl Assign(v0: Node, v1: Node, v2: Node)
+.decl Assume(v0: Node, v1: Node)
+.decl Call(v0: Node, v1: Node)
+.decl DUEdge(v0: Node, v1: Node)
+.decl DUPath(v0: Node, v1: Node)
+.decl FalseBranch(v0: Node, v1: Node)
+.decl FalseCond(v0: Node)
+.decl LibCall(v0: Node, v1: Node)
+.decl LoopHead(v0: Node)
+.decl SparrowAlarm(v0: Node, v1: Node, v2: Node)
+.decl TrueBranch(v0: Node, v1: Node)
+.decl TrueCond(v0: Node)
+
+.input AlarmAllocSize
+.input AlarmPrintf
+.input Assign
+.input Assume
+.input Call
+.input DUEdge
+.input FalseBranch
+.input FalseCond
+.input LibCall
+.input LoopHead
+.input SparrowAlarm
+.input TrueBranch
+.input TrueCond
+.output Alarm
+.output DUPath
+.decl Deriv_Alarm5(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm6(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm7(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm8(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath0(v0: Node, v1: Node)
+.decl Deriv_DUPath1(v0: Node, v1: Node)
+.decl Deriv_DUPath10(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath11(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath12(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath13(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath14(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath15(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath16(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath17(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath18(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath19(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath2(v0: Node, v1: Node)
+.decl Deriv_DUPath20(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath21(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath22(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath23(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath24(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath3(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath4(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath9(v0: Node, v1: Node, v2: Node)
+
+.output Deriv_Alarm5
+.output Deriv_Alarm6
+.output Deriv_Alarm7
+.output Deriv_Alarm8
+.output Deriv_DUPath0
+.output Deriv_DUPath1
+.output Deriv_DUPath10
+.output Deriv_DUPath11
+.output Deriv_DUPath12
+.output Deriv_DUPath13
+.output Deriv_DUPath14
+.output Deriv_DUPath15
+.output Deriv_DUPath16
+.output Deriv_DUPath17
+.output Deriv_DUPath18
+.output Deriv_DUPath19
+.output Deriv_DUPath2
+.output Deriv_DUPath20
+.output Deriv_DUPath21
+.output Deriv_DUPath22
+.output Deriv_DUPath23
+.output Deriv_DUPath24
+.output Deriv_DUPath3
+.output Deriv_DUPath4
+.output Deriv_DUPath9
+
+DUPath(v0, v1) :- DUEdge(v0, v1).
+DUPath(v0, v1) :- FalseBranch(v0, v1).
+DUPath(v0, v1) :- TrueBranch(v0, v1).
+DUPath(v0, v1) :- FalseCond(v0), FalseBranch(v0, v2), DUPath(v2, v1).
+DUPath(v0, v1) :- TrueCond(v0), TrueBranch(v0, v2), DUPath(v2, v1).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), AlarmAllocSize(v5, _), AlarmPrintf(v5, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), AlarmAllocSize(v5, _), !AlarmPrintf(v5, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), !AlarmAllocSize(v5, _), AlarmPrintf(v5, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), !AlarmAllocSize(v5, _), !AlarmPrintf(v5, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath0(v0, v1) :- DUEdge(v0, v1).
+Deriv_DUPath1(v0, v1) :- FalseBranch(v0, v1).
+Deriv_DUPath2(v0, v1) :- TrueBranch(v0, v1).
+Deriv_DUPath3(v0, v1, v2) :- FalseCond(v0), FalseBranch(v0, v2), DUPath(v2, v1).
+Deriv_DUPath4(v0, v1, v2) :- TrueCond(v0), TrueBranch(v0, v2), DUPath(v2, v1).
+Deriv_Alarm5(v0, v1, v5) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), AlarmAllocSize(v5, _), AlarmPrintf(v5, _).
+Deriv_Alarm6(v0, v1, v5) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), AlarmAllocSize(v5, _), !AlarmPrintf(v5, _).
+Deriv_Alarm7(v0, v1, v5) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), !AlarmAllocSize(v5, _), AlarmPrintf(v5, _).
+Deriv_Alarm8(v0, v1, v5) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v5), !AlarmAllocSize(v5, _), !AlarmPrintf(v5, _).
+Deriv_DUPath10(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath11(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath12(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath13(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath14(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath15(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath16(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath17(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath18(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath19(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath20(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath21(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath22(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath23(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath24(v0, v1, v2) :- DUEdge(v0, v2), !Assign(v2, _, _), !Assume(v2, _), !Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath9(v0, v1, v2) :- DUEdge(v0, v2), Assign(v2, _, _), Assume(v2, _), Call(v2, _), !LibCall(v2, _), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).

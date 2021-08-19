@@ -423,7 +423,7 @@ def em_test(args, benchmark_list):
         generate_named_cons(args, program, version, analysis_type, bnet_dir)
         rule_prob_file = os.path.join(PROJECT_HOME, args.rule_prob_file)
         build_bnet(program, version, analysis_type, bnet_dir, False, TEST_MODE,
-                   rule_prob_file)
+                   rule_prob_file, None)
         if os.path.exists(os.path.join(benchmark_dir, 'label.json')):
             run_em_test_bingo(program, benchmark_dir, output_dir,
                               analysis_type, bnet_dir, suffix)
@@ -516,7 +516,6 @@ def main():
 
     args = parser.parse_args()
     benchmark_list = initialize()
-
     if args.subcmd == "fetch":
         fetch(args, benchmark_list)
     elif args.subcmd == "analyze":
