@@ -72,7 +72,7 @@ def figure_app(app):
     assert (app == 'drake' or app == 'dynaboost')
     epsilons = [str(x) for x in [0.001, 0.01]] #, 0.1 ]
     fig, ax = plt.subplots()
-    plt.xticks(range(0, 13), fontsize=tickfontsize-5, rotation=45)
+    plt.xticks(range(0, 13) if app == "dynaboost" else range(0, 11), fontsize=tickfontsize-5, rotation=45)
     if app == "drake":
         yticks = [0, 20, 40, 60, 80, 100, 120, 140]
     else:

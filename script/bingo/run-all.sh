@@ -17,6 +17,10 @@ else
   SKIP_SOUFFLE="false"
 fi
 
+if [[ "$@" =~ "skip-compress" ]]; then
+  SKIP_COMPRESS="true"
+fi
+
 mkdir -p $RESULT_DIR
 
 taint_benchmarks=(
@@ -57,6 +61,11 @@ function run() {
   fi
   if [[ $SKIP_SOUFFLE == "true" ]]; then
     { $PROJECT_HOME/bin/run.py --skip-souffle rank $BENCHMARK_DIR/$p; } >&$RESULT_DIR/$p/rank.log || {
+      echo "Rank Failed: $p"
+      exit 1
+    }
+  elif [[ $SKIP_COMPRESS == "true" ]]; then
+    { $PROJECT_HOME/bin/run.py rank --skip-compress --timestamp baseline-no-comp $BENCHMARK_DIR/$p; } >&$RESULT_DIR/$p/rank.log || {
       echo "Rank Failed: $p"
       exit 1
     }
