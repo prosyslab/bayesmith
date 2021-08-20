@@ -9,9 +9,10 @@ import errno
 import json
 import numpy as np
 
-BASE_DIR = os.path.dirname(__file__)
-FACTS_TXT = os.path.join(BASE_DIR, "facts.txt")
-BENCH_TXT = os.path.join(BASE_DIR, "benchmarks.txt")
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+PROJECT_HOME_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+BENCHMARKS_DIR = os.path.join(PROJECT_HOME_DIR, "benchmarks")
+BENCH_TXT = os.path.join(PROJECT_HOME_DIR, "benchmarks.txt")
 MIN_V = 0.0
 PRETTY_DST = "images-final"
 
@@ -29,31 +30,20 @@ def get_benchmark_info(benchmark):
         exit(1)
 
     # Read sparrow-config.json
-    with open(FACTS_TXT, 'r') as f:
-        benchmarks_dir = f.read().strip()
-        sparrow_config = os.path.join(benchmarks_dir, benchmark,
-                                      'sparrow-config.json')
-        with open(sparrow_config, 'r') as g:
-            data = json.load(g)
-            analysis_type = data['analysis_type']
+    sparrow_config = os.path.join(BENCHMARKS_DIR, benchmark,
+                                  'sparrow-config.json')
+    with open(sparrow_config, 'r') as g:
+        data = json.load(g)
+        analysis_type = data['analysis_type']
 
     return version, analysis_type
 
 
 def get_data_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
-    try:
-        with open(FACTS_TXT, 'r') as f:
-            benchmarks_dir = f.read().strip()
-            data_path = os.path.join(benchmarks_dir, benchmark, version,
-                                     'sparrow-out', atyp,
-                                     'bingo_combined-' + timestamp)
-            return data_path
-    except FileNotFoundError as e:
-        print('Error: ', e)
-        print('Error: Check if facts.txt exists')
-        print('Error: Make sure your configuration succeeds')
-        exit(1)
+    data_path = os.path.join(BENCHMARKS_DIR, benchmark, version, 'sparrow-out',
+                             atyp, 'bingo_combined-' + timestamp)
+    return data_path
 
 
 def get_data_path_dict(benchmark, timestamps):
@@ -66,50 +56,26 @@ def get_data_path_dict(benchmark, timestamps):
 
 def get_alarm_path(benchmark):
     version, atyp = get_benchmark_info(benchmark)
-    try:
-        with open(FACTS_TXT, 'r') as f:
-            benchmarks_dir = f.read().strip()
-            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                      'sparrow-out', atyp, 'bnet-baseline',
-                                      'Alarm.txt')
-            return alarm_path
-    except FileNotFoundError as e:
-        print('Error: ', e)
-        print('Error: Check if facts.txt exists')
-        print('Error: Make sure your configuration succeeds')
-        exit(1)
+    alarm_path = os.path.join(BENCHMARKS_DIR, benchmark, version,
+                              'sparrow-out', atyp, 'bnet-baseline',
+                              'Alarm.txt')
+    return alarm_path
 
 
 def get_cons_all2bnet_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
-    try:
-        with open(FACTS_TXT, 'r') as f:
-            benchmarks_dir = f.read().strip()
-            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                      'sparrow-out', atyp, 'bnet-' + timestamp,
-                                      'cons_all2bnet.log')
-            return alarm_path
-    except FileNotFoundError as e:
-        print('Error: ', e)
-        print('Error: Check if facts.txt exists')
-        print('Error: Make sure your configuration succeeds')
-        exit(1)
+    alarm_path = os.path.join(BENCHMARKS_DIR, benchmark, version,
+                              'sparrow-out', atyp, 'bnet-' + timestamp,
+                              'cons_all2bnet.log')
+    return alarm_path
 
 
 def get_bingo_stat_path(benchmark, timestamp):
     version, atyp = get_benchmark_info(benchmark)
-    try:
-        with open(FACTS_TXT, 'r') as f:
-            benchmarks_dir = f.read().strip()
-            alarm_path = os.path.join(benchmarks_dir, benchmark, version,
-                                      'sparrow-out', atyp,
-                                      'bingo_stats-' + timestamp + '.txt')
-            return alarm_path
-    except FileNotFoundError as e:
-        print('Error: ', e)
-        print('Error: Check if facts.txt exists')
-        print('Error: Make sure your configuration succeeds')
-        exit(1)
+    alarm_path = os.path.join(BENCHMARKS_DIR, benchmark, version,
+                              'sparrow-out', atyp,
+                              'bingo_stats-' + timestamp + '.txt')
+    return alarm_path
 
 
 def get_num_alarms(benchmark):
@@ -263,12 +229,10 @@ class Plotter:
             dic[ts] = []
             init_rank_dic[ts] = 0
         for alarm, rank in self.rank_history.items():
-            temp = 0
             ts = alarm.split('@')[-1]
             init_rank_dic[ts] += rank[0]
             for i in range(len(rank) - 1):
                 diff = rank[i + 1] - rank[i]
-                # if diff > 0:
                 vc_size = diff / float(self.num_alarms)
                 if vc_size > MIN_V:
                     dic[ts] += [diff]
