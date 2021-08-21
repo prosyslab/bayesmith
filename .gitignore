@@ -46,3 +46,4 @@ log.txt
 report.txt
 *.log
 driver.out
+*.csv

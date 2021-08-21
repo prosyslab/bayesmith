@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
-import matplotlib
-import matplotlib.pyplot as plt
+from numpy.core.fromnumeric import prod
 import pandas as pd
 import argparse
 import os
 import json
-import numpy as np
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
 BENCHMARKS_DIR = os.path.join(PROJECT_HOME_DIR, "benchmarks")
 BENCH_TXT = os.path.join(PROJECT_HOME_DIR, "benchmarks.txt")
 MIN_V = 0.0
-PRETTY_DST = "images-final"
 
 
 def get_benchmark_info(benchmark):
@@ -83,14 +80,6 @@ def get_num_alarms(benchmark):
         return len(f.readlines())
 
 
-def get_img_path(timestamps, is_pretty):
-    if is_pretty:
-        return os.path.join(BASE_DIR, PRETTY_DST)
-    else:
-        stamp = "+".join(timestamps)
-        return os.path.join(BASE_DIR, "images-" + stamp)
-
-
 def get_benchmarks():
     """Get list of benchmarks which are candidate benchmark.
     """
@@ -98,44 +87,13 @@ def get_benchmarks():
     return df['Name'].to_list()
 
 
-def get_label(alarm, is_pretty):
-    if not is_pretty:
-        return "", "", 6, alarm
-    elif 'baseline' in alarm:
-        return "dashed", "o", 6, "Bingo"
-    else:
-        return "solid", "*", 8, "BayeSmith"
-
-
-def give_step_size(max_val):
-    approx_interval_size = int(max_val / 5)
-    if approx_interval_size <= 3:
-        return 2
-    if approx_interval_size <= 5:
-        return 5
-    elif approx_interval_size <= 10:
-        return 10
-    elif approx_interval_size <= 20:
-        return 20
-    elif approx_interval_size <= 50:
-        return 50
-    elif approx_interval_size <= 100:
-        return 100
-    elif approx_interval_size <= 200:
-        return 200
-    else:
-        return 500
-
-
-class Plotter:
-    def __init__(self, benchmark, timestamps, is_pretty):
+class Bnet:
+    def __init__(self, benchmark, timestamps):
         self.benchmark = benchmark
         self.timestamps = timestamps
         self.rank_history = {}
         self.data_path_dict = get_data_path_dict(benchmark, timestamps)
         self.num_alarms = get_num_alarms(benchmark)
-        self.img_path = get_img_path(timestamps, is_pretty)
-        self.is_pretty = is_pretty
 
     def transform_data(self):
         for timestamp, data_path in self.data_path_dict.items():
@@ -176,106 +134,168 @@ class Plotter:
                     self.rank_history[true_alarm['Tuple'] + '@' +
                                       timestamp] += [true_alarm['Rank']]
 
-    def render_or(self, fname=None):
-        """Render plot by traversing over history of each alarm.
+    def compute_avg_feedbk_time(self):
+        l = []
+        for timestamp in self.timestamps:
+            bingo_stat_path = get_bingo_stat_path(self.benchmark, timestamp)
+            df = pd.read_csv(bingo_stat_path,
+                             sep='\t',
+                             header=0,
+                             usecols=['Time(s)'])
+            l.append(round(df.mean().values[0], 2))
+        return l
 
-        It takes save option into account on demand.
-        """
-        plt.rcParams['axes.titlepad'] = 10
-        plt.rcParams['xtick.major.pad'] = 15
-        plt.rcParams['ytick.major.pad'] = 15
-        plt.rcParams['xtick.labelsize'] = 20
-        plt.rcParams['ytick.labelsize'] = 20
-        #plt.rcParams['xtick.major.width'] = 5
-        #plt.rcParams['ytick.major.width'] = 5
-        plt.rcParams['legend.fontsize'] = 25
-        plt.figure(figsize=(21.8, 18))
-        pos = '111'
-        plt.subplot(pos)
-        x_max = 0
-        y_max = 0
-        if self.is_pretty:
-            new_dict = {}
-            for alarm in reversed(list(self.rank_history.keys())):
-                rank = self.rank_history[alarm]
-                ts = alarm.split('@')[-1]
-                if ts in new_dict:
-                    new_dict[ts] = np.add(new_dict[ts], rank)
-                else:
-                    new_dict[ts] = rank
-            for timestamp, rank in new_dict.items():
-                if x_max < len(rank):
-                    x_max = len(rank)
-                if y_max < max(rank):
-                    y_max = max(rank)
-                linestyle, marker, markersize, label = get_label(
-                    timestamp, self.is_pretty)
-                plt.plot(rank,
-                         linestyle=linestyle,
-                         marker=marker,
-                         markersize=markersize,
-                         markevery=5,
-                         label=label,
-                         linewidth=5)
+    def measure_bnet_size(self):
+        l = []
+        for timestamp in self.timestamps:
+            cons_all2bnet_path = get_cons_all2bnet_path(
+                self.benchmark, timestamp)
+            with open(cons_all2bnet_path, 'r') as f:
+                lines = f.readlines()
+                num_clauses = lines[0].split(' ')[-2]
+                num_tuples = lines[1].split(' ')[-2]
+            l.append(int(num_tuples))
+            l.append(int(num_clauses))
+        return l
+
+    def count_vc(self):
+        vc_dict = {}
+        for alarm, _ in self.rank_history.items():
+            ts = alarm.split('@')[-1]
+            vc_dict[ts] = []
+        for alarm, rank in self.rank_history.items():
+            ts = alarm.split('@')[-1]
+            for i in range(len(rank) - 1):
+                diff = rank[i + 1] - rank[i]
+                vc_size = diff / float(self.num_alarms)
+                if vc_size > MIN_V:
+                    vc_dict[ts] += [diff]
+        l = []
+        for ts, vc_lst in vc_dict.items():
+            if len(vc_lst) == 0:
+                avg = 0.0
+            else:
+                avg = sum(vc_lst) / len(vc_lst)
+            l.append(len(vc_lst))
+            l.append(round(avg, 2))
+        return l
+
+    def make_fg_row(self):
+        fg_lst = self.count_vc()
+        new_lst = []
+        for i, v in enumerate(fg_lst):
+            if i % 2 == 1:
+                n = fg_lst[i - 1]
+                product = n * round(v, 2)
+                new_lst.append(v)
+                new_lst.append(round(product, 1))
+            else:
+                new_lst.append(v)
+        return [self.benchmark] + new_lst
+
+    def make_size_row(self):
+        tc_lst = self.measure_bnet_size()
+        time_lst = self.compute_avg_feedbk_time()
+        size_lst = []
+        for i, v in enumerate(tc_lst):
+            size_lst.append(v)
+            if i % 2 == 1:
+                time = time_lst[int(i / 2)]
+                size_lst.append(time)
+        return [self.benchmark] + size_lst
+
+    def add_row(self, typ, table):
+        self.transform_data()
+        if typ == 'fg':
+            table.append(self.make_fg_row())
+        elif typ == 'size':
+            table.append(self.make_size_row())
         else:
-            for alarm in reversed(list(self.rank_history.keys())):
-                rank = self.rank_history[alarm]
-                if x_max < len(rank):
-                    x_max = len(rank)
-                if y_max < max(rank):
-                    y_max = max(rank)
-                linestyle, marker, markersize, label = get_label(
-                    alarm, self.is_pretty)
-                plt.plot(rank,
-                         linestyle=linestyle,
-                         marker=marker,
-                         markersize=markersize,
-                         markevery=5,
-                         label=label,
-                         linewidth=5)
-        #plt.ylabel('Rank', size=100, labelpad=20)
-        plt.ylabel('Rank', size=80, labelpad=20)
-        #plt.xlabel('# Interactions', size=100, labelpad=20)
-        plt.xlabel('# Interactions', size=80, labelpad=20)
-        plt.xticks(np.arange(0, x_max, give_step_size(x_max)), size=70)
-        plt.yticks(size=70)
-        plt.legend(loc='upper right',
-                   borderaxespad=0.5,
-                   fancybox=True,
-                   fontsize=75)
-        plt.suptitle(self.benchmark, fontsize=100, x=0.6)
-        plt.subplots_adjust(left=0.2,
-                            top=0.9,
-                            right=0.97,
-                            bottom=0.15,
-                            wspace=0.25)
-        if not fname:
-            fname = self.benchmark + '.pdf'
-        save_path = os.path.join(self.img_path, fname)
-        print('saved at', save_path)
-        plt.savefig(save_path, format='pdf')
+            print("Error: unknown table type: " + typ)
+
+
+headers = {
+    'fg': [
+        'Program', 'Bingo:Freq', 'Bingo:Mag', 'Bingo:FxM', 'Bayes:Freq',
+        'Bayes:Mag', 'Bayes:FxM'
+    ],
+    'size': [
+        'Program', 'Bingo:#T', 'Bingo:#C', 'Bingo:Time', 'Bayes:#T',
+        'Bayes:#C', 'Bayes:Time'
+    ]
+}
+
+
+def add_table(table, typ, sub_table):
+    if len(sub_table) != 0:
+        if typ == 'fg':
+            table += sub_table
+        value_only = [r[1:] for r in sub_table]
+        table += [['Average' if typ == 'fg' else 'Taint'] +
+                  [sum(i) / len(sub_table) for i in zip(*value_only)]]
+
+
+def round_val(typ, ind, val):
+    if ind > 0:
+        nth = (ind - 1) % 3
+        if typ == 'fg':
+            if nth == 0:
+                return int(round(val, 0))
+            else:
+                return round(val, 1)
+        else:
+            if nth == 2:
+                return round(val, 1)
+            else:
+                return int(round(val, 0))
+    else:
+        return val
+
+
+def table_to_csv(table, typ):
+    rows = [
+        ",".join([
+            str(v if isinstance(v, str) else round_val(typ, i, v))
+            for i, v in enumerate(row)
+        ]) for row in table
+    ]
+    return "\n".join(rows)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Plotting rank history')
+    parser = argparse.ArgumentParser(description='Measuring Bayesian networks')
     parser.add_argument('benchmark',
                         metavar='BENCHMARK',
                         help="name of target benchmark",
-                        choices=get_benchmarks())
+                        choices=get_benchmarks() + ["all"])
     parser.add_argument('timestamp',
                         metavar='TIMESTAMP',
                         nargs='+',
                         help="timestamp(s) of ranking execution")
-    parser.add_argument('-p',
-                        '--pretty',
-                        action='store_true',
-                        help="render pretty plot")
-    parser.add_argument('-o',
-                        '--output',
-                        metavar="OUTPUT_FILE",
-                        help="name of output file")
+    parser.add_argument('--table',
+                        type=str,
+                        choices=['fg', 'size'],
+                        required=True)
+
     args = parser.parse_args()
 
-    plotter = Plotter(args.benchmark, args.timestamp, args.pretty)
-    plotter.transform_data()
-    plotter.render_or(args.output)
+    header = headers[args.table]
+    table = [header]
+    sub_tables = {'interval': [], 'taint': []}
+    if args.benchmark == "all":
+        for benchmark in get_benchmarks():
+            analysis_type = get_benchmark_info(benchmark)[1]
+            bnet = Bnet(benchmark, args.timestamp)
+            bnet.add_row(args.table, sub_tables[analysis_type])
+        itv_table = sub_tables['interval']
+        add_table(table, args.table, itv_table)
+        tnt_table = sub_tables['taint']
+        add_table(table, args.table, tnt_table)
+    else:
+        bnet = Bnet(args.benchmark, args.timestamp)
+        bnet.add_row(args.table, table)
+
+    file_name = 'bnet-fg.csv' if args.table == 'fg' else 'bnet-size.csv'
+    with open(file_name, 'w') as f:
+        csv = table_to_csv(table, args.table)
+        f.write(csv)

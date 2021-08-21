@@ -7,7 +7,6 @@ T1=$1
 T2=$2
 
 source $PROJECT_HOME/script/bingo/benchmark.sh
-source $PLOT_DIR/env/bin/activate
 
 function plot() {
   T1=$1
@@ -26,4 +25,3 @@ function plot() {
 echo "PLOT START"
 plot $T1 $T2 "${interval_benchmarks[@]}"
 plot $T1 $T2 "${taint_benchmarks[@]}"
-deactivate
