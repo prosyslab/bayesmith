@@ -51,20 +51,19 @@ drake_prog = [{
     "version": "0.8",
     "typ": "taint"
 }]
-# drake = [136, 24, 8, 44, 13, 32, 9, 19, 6, 22]
-# drake_B = [46, 5, 13, 14, 3, 16, 8, 18, 6, 14]
+DOCKER_HOME = "/home/ubuntu"
 drake = []
 drake_B = []
 for prog in drake_prog:
     prog_full_name = prog['name'] + '-' + prog['version']
     with open(
-            '~/drake/benchmark/{}/sparrow-out/{}/bingo_delta_sem-eps_strong_0.001_stats.txt'
-            .format(prog_full_name, prog['typ'])) as f:
+            '{}/drake/benchmark/{}/sparrow-out/{}/bingo_delta_sem-eps_strong_0.001_stats.txt'
+            .format(DOCKER_HOME, prog_full_name, prog['typ'])) as f:
         num = len(f.readlines()) - 1
         drake.append(num)
     with open(
-            '~/drake/benchmark/{}/sparrow-out/{}/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt'
-            .format(prog_full_name, prog['typ'])) as f:
+            '{}/drake/benchmark/{}/sparrow-out/{}/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt'
+            .format(DOCKER_HOME, prog_full_name, prog['typ'])) as f:
         num = len(f.readlines()) - 1
         drake_B.append(num)
 
@@ -72,22 +71,21 @@ dynaboost_prog = [
     "bc", "cflow", "grep", "gzip", "patch", "readelf", "sed", "sort", "tar",
     "optipng", "latex2rtf", "shntool"
 ]
-# dynaboost = [48, 21, 66, 235, 14, 88, 70, 106, 91, 4, 5, 18]
-# dynaboost_B = [48, 24, 73, 217, 15, 35, 66, 61, 43, 4, 6, 18]
+
 dynaboost = []
 dynaboost_B = []
 for prog in dynaboost_prog:
-    with open('~/bingo/{}true-stats.txt'.format(prog)) as f:
+    with open('{}/bingo/{}true-stats.txt'.format(DOCKER_HOME, prog)) as f:
         num = len(f.readlines()) - 1
         dynaboost.append(num)
-    with open('~/bingo/{}bayesmith-stats.txt'.format(prog)) as f:
+    with open('{}/bingo/{}bayesmith-stats.txt'.format(DOCKER_HOME, prog)) as f:
         num = len(f.readlines()) - 1
         dynaboost_B.append(num)
 
 tickfontsize = 25
 markersize = 100
 
-epsilons = [str(x) for x in [0.001, 0.005, 0.01, 0.05]]  #, 0.1 ]
+epsilons = [str(x) for x in [0.001, 0.005, 0.01, 0.05]]
 
 color = {
     '0.001': 'royalblue',
