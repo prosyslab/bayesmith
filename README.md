@@ -1,4 +1,5 @@
-# Continuous Reasoning
+# BayeSmith
+
 ## Setup
 ```
 ./build.sh
