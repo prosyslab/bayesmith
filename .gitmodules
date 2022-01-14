@@ -7,6 +7,3 @@
 [submodule "sparrow"]
 	path = sparrow
 	url = https://github.com/prosyslab/sparrow-incubator.git
-[submodule "bug-bench"]
-	path = bug-bench
-	url = https://github.com/prosyslab/bug-bench.git
