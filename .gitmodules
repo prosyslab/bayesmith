@@ -6,4 +6,4 @@
 	url = https://github.com/prosyslab/libdai.git
 [submodule "sparrow"]
 	path = sparrow
-	url = https://github.com/prosyslab/sparrow-incubator.git
+	url = https://github.com/prosyslab/sparrow.git
