@@ -1643,7 +1643,7 @@ let rec learning env =
 let initialize is_test =
   ( try Unix.mkdir !out_dir 0o775
     with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
-  let custom_dir = String.concat "/" !targets in
+  let custom_dir = String.concat "-" !targets in
   let new_out_dir = !out_dir ^ "/" ^ custom_dir in
   ( try Unix.mkdir new_out_dir 0o775
     with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
