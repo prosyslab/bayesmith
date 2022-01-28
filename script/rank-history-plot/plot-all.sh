@@ -6,6 +6,7 @@ PLOT_BIN=$PLOT_DIR/plot.py
 T1=$1
 T2=$2
 
+mkdir -p $PLOT_DIR/images-final
 source $PROJECT_HOME/script/bingo/benchmark.sh
 
 function plot() {

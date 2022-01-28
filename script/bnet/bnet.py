@@ -259,7 +259,7 @@ def table_to_csv(table, typ):
             for i, v in enumerate(row)
         ]) for row in table
     ]
-    return "\n".join(rows)
+    return "\n".join(rows) + "\n"
 
 
 if __name__ == "__main__":
