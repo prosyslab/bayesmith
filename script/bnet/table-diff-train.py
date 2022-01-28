@@ -30,10 +30,10 @@ def get_combinations():
         return [l.strip().split(",") for l in f.readlines()]
 
 
-def get_num_iter(analsyis_typ, bench):
+def get_num_iter(analsyis_typ, bench, timestamp):
     version = get_benchmark_version(bench)
     stats_file = os.path.join(BENCHMARKS_DIR, bench, version, "sparrow-out",
-                              analsyis_typ, "bingo_stats-final.txt")
+                              analsyis_typ, f"bingo_stats-{timestamp}.txt")
     with open(stats_file) as f:
         return len(f.readlines()) - 1
 
@@ -46,17 +46,17 @@ def print_table(plain_dict, combi_dict):
     print(",".join(header))
     print(",".join([
         "Interval",
-        statistics.mean(plain_dict["interval"]),
-        statistics.pstdev(plain_dict["interval"]),
-        statistics.mean(combi_dict["interval"]),
-        statistics.pstdev(combi_dict["interval"])
+        str(statistics.mean(plain_dict["interval"])),
+        str(statistics.pstdev(plain_dict["interval"])),
+        str(statistics.mean(combi_dict["interval"])),
+        str(statistics.pstdev(combi_dict["interval"]))
     ]))
     print(",".join([
         "Taint",
-        statistics.mean(plain_dict["taint"]),
-        statistics.pstdev(plain_dict["taint"]),
-        statistics.mean(combi_dict["taint"]),
-        statistics.pstdev(combi_dict["taint"])
+        str(statistics.mean(plain_dict["taint"])),
+        str(statistics.pstdev(plain_dict["taint"])),
+        str(statistics.mean(combi_dict["taint"])),
+        str(statistics.pstdev(combi_dict["taint"]))
     ]))
 
 
@@ -68,14 +68,15 @@ if __name__ == "__main__":
         analysis_type = combi[0]
         bench1 = combi[1]
         bench2 = combi[2]
-        plain_num_iter1 = get_num_iter(analysis_type, bench1)
-        plain_num_iter2 = get_num_iter(analysis_type, bench2)
+        plain_num_iter1 = get_num_iter(analysis_type, bench1, "final")
+        plain_num_iter2 = get_num_iter(analysis_type, bench2, "final")
         plain_sum = plain_num_iter1 + plain_num_iter2
         plain_dict[analysis_type].append(plain_sum)
 
-        # TODO
-        combi_num_iter1 = 0
-        combi_sum_iter2 = 0
+        combi_num_iter1 = get_num_iter(analysis_type, bench1,
+                                       f"{bench1}-{bench2}")
+        combi_sum_iter2 = get_num_iter(analysis_type, bench2,
+                                       f"{bench1}-{bench2}")
         combi_sum = combi_num_iter1 + combi_sum_iter2
         combi_dict[analysis_type].append(combi_sum)
 
