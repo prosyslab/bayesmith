@@ -354,8 +354,8 @@ module Evaluation = struct
         let bench_dir = Filename.concat benchmark_home bench in
         let combined_dir =
           Filename.concat bench_dir
-            ( "sparrow-out/" ^ !analysis_type ^ "/bingo_combined-"
-            ^ env.current_timestamp )
+            ("sparrow-out/" ^ !analysis_type ^ "/bingo_combined-"
+           ^ env.current_timestamp)
         in
         let num_iter =
           Sys.readdir combined_dir |> Array.to_list
@@ -383,7 +383,7 @@ module Evaluation = struct
         diff_benchmarks = [];
         improved_ratio = 0.0;
         env;
-      } )
+      })
     else
       let diff_lst =
         List.fold_left2
@@ -556,7 +556,7 @@ let generate_named_cons env current_rule_instance =
   List.iter
     (fun bench ->
       match find_reusable_timestamp current_rule_instance bench with
-      | Some dir ->
+      | Some dir -> (
           log "- Reusable named_cons_all of %s found (copy %s to bnet-%s)" bench
             dir env.current_timestamp;
           let base_dir = base_dir_of bench in
@@ -564,7 +564,8 @@ let generate_named_cons env current_rule_instance =
           let dst_dir =
             Filename.concat base_dir ("bnet-" ^ env.current_timestamp)
           in
-          if src_dir = dst_dir then () else (try Unix.symlink src_dir dst_dir with _ -> ())
+          if src_dir = dst_dir then ()
+          else try Unix.symlink src_dir dst_dir with _ -> ())
       | None ->
           log "- Generate named_cons_all of %s" bench;
           let dir =
@@ -619,7 +620,7 @@ let run_bingo env current_rule_instance =
              else (
                (try Unix.symlink src_dir dst_dir with _ -> ());
                (try Unix.symlink src_file dst_file with _ -> ());
-               None )
+               None)
          | None ->
              log "- Run %s" bench;
              let cid =
@@ -656,7 +657,7 @@ let run_bingo env current_rule_instance =
              close_out oc;
              let oc = open_out combined_done_file in
              P.fprintf oc "%s" env.current_timestamp;
-             close_out oc )
+             close_out oc)
            else prerr_endline ("Error: Bingo failed for " ^ bench)
        | None -> ())
 
@@ -695,10 +696,10 @@ let run_final env =
   let test_benchmarks = get_test_benchmark !targets in
   let remove_prev_links target =
     let base_dir = base_dir_of target in
-    ( try Unix.unlink (base_dir ^ "bingo_stats-final.txt")
-      with Unix.Unix_error (_, _, _) -> () );
-    ( try Unix.unlink (base_dir ^ "bingo_combined-final")
-      with Unix.Unix_error (_, _, _) -> () );
+    (try Unix.unlink (base_dir ^ "bingo_stats-final.txt")
+     with Unix.Unix_error (_, _, _) -> ());
+    (try Unix.unlink (base_dir ^ "bingo_combined-final")
+     with Unix.Unix_error (_, _, _) -> ());
     try Unix.unlink (base_dir ^ "bnet-final")
     with Unix.Unix_error (_, _, _) -> ()
   in
@@ -741,7 +742,7 @@ let read_features vc =
             loop ic_opt new_arity new_string_set new_map
         | exception End_of_file ->
             close_in ic;
-            (set, arity, map) )
+            (set, arity, map))
   in
   let read fact_name =
     let fact_file = fact_name ^ ".facts" in
@@ -956,10 +957,10 @@ let remove_prob_from_timestamp env =
   then (
     let pure_timestamp = Str.matched_group 1 env.current_timestamp in
     log "After removing: %s" pure_timestamp;
-    { env with current_timestamp = pure_timestamp } )
+    { env with current_timestamp = pure_timestamp })
   else (
     log "NO REMOVAL";
-    env )
+    env)
 
 let update_env timestamp total_iters env =
   let total_num_alarms, total_num_bugs =
@@ -1054,8 +1055,8 @@ let find_v_curves env =
       let num_alarms = StringSet.cardinal alarms in
       let combined_dir =
         Filename.concat bench_dir
-          ( "sparrow-out/" ^ !analysis_type ^ "/bingo_combined-"
-          ^ env.current_timestamp )
+          ("sparrow-out/" ^ !analysis_type ^ "/bingo_combined-"
+         ^ env.current_timestamp)
       in
       lst @ find_v_curve_one bench num_alarms bugs bnet_dir combined_dir)
     [] env.benchmarks
@@ -1258,7 +1259,7 @@ let improved env old_rule refined_rules =
   if RuleSet.cardinal refined_rules = 1 then (
     log "SUSPICIOUS";
     log "Rule should have been refined: %s" (Rule.to_string old_rule);
-    (false, env) )
+    (false, env))
   else
     let env = update_current_timestamp env in
     let new_rules =
@@ -1302,7 +1303,7 @@ let improved env old_rule refined_rules =
                 evaluated_env.history
                 @ [ (evaluated_env.current_timestamp, total_iters) ];
               ruleset_cache;
-            } ) )
+            } ))
         else
           ( false,
             {
@@ -1389,7 +1390,7 @@ let rec refine_tuples env boxed_rule grule rule_to_be_refined features
             else
               refine_tuples
                 { env with epoch_tuple = env.epoch_tuple + 1 }
-                boxed_rule grule rule_to_be_refined features feature_map t )
+                boxed_rule grule rule_to_be_refined features feature_map t)
 
 let refine_rule env features alarm_map feature_map grule target_rule =
   let boxed_rule = Datalog.Rule.dontcare_into_box target_rule in
@@ -1405,7 +1406,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
       (* Case A1 : AlarmTuple exists and boxes exist in the AlarmTuple *)
       log "Case A1";
       refine_tuples env boxed_rule grule target_rule features feature_map
-        alarm_tuple_boxes )
+        alarm_tuple_boxes)
     else if alarm_tuple_exists then (
       (* Case A2 : AlarmTuple exists and no more boxes in the AlarmTuple *)
       log "Case A2";
@@ -1415,7 +1416,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
       if improved then (true, env)
       else
         refine_tuples env boxed_rule grule target_rule features feature_map
-          alarm_rule_boxes )
+          alarm_rule_boxes)
     else (
       (* Case A3 : No AlarmTuple has been generated in the rule *)
       log "Case A3";
@@ -1426,9 +1427,9 @@ let refine_rule env features alarm_map feature_map grule target_rule =
         | Some s -> s
         | None ->
             prerr_endline
-              ( "Cannot find "
+              ("Cannot find "
               ^ GTuple.to_string target_tuple
-              ^ " in SparrowAlarm.facts" );
+              ^ " in SparrowAlarm.facts");
             exit 1
       in
       log "target alarm: %s" target_alarm;
@@ -1437,7 +1438,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
       in
       if target_alarm_type = not_found then (
         log "NOT_FOUND - Alarm case";
-        (false, env) )
+        (false, env))
       else
         let is_fresh = List.length grule.premises = 1 in
         if is_fresh then log "FRESH CASE"
@@ -1451,7 +1452,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
         if is_fresh then alarm_node_seed := List.nth boxes 0;
         let target_v = !alarm_node_seed in
         refine_boxed_rule env boxed_rule target_rule target_alarm_type
-          alarm_arity target_v )
+          alarm_arity target_v)
   else
     (* DUPath rule refinement *)
     let path_rule_boxes =
@@ -1481,10 +1482,9 @@ let refine_rule env features alarm_map feature_map grule target_rule =
       in
       if target_type = not_found then (
         log "NOT_FOUND - DUPath case";
-        (false, env) )
+        (false, env))
       else
-        refine_boxed_rule env boxed_rule target_rule target_type arity target_v
-      )
+        refine_boxed_rule env boxed_rule target_rule target_type arity target_v)
     else (
       (* Case P2 : Refinement in progress - refine (1) negated tuple's first Var, or (2) Box *)
       log "Case P2";
@@ -1494,7 +1494,7 @@ let refine_rule env features alarm_map feature_map grule target_rule =
       if improved then (true, env)
       else
         refine_tuples env boxed_rule grule target_rule features feature_map
-          path_rule_boxes )
+          path_rule_boxes)
 
 (* Heuristic: Given a grounded rule (grule), find the corresponding rule from the rule set *)
 let find_rule grule rules =
@@ -1527,7 +1527,7 @@ let rec refine_rules env features alarm_map feature_map = function
           else
             refine_rules
               { env with epoch_rule = env.epoch_rule + 1 }
-              features alarm_map feature_map t )
+              features alarm_map feature_map t)
 
 let find_candidates vc =
   let named_cons = Filename.concat vc.VCurve.bnet_dir "named_cons_all.txt" in
@@ -1576,7 +1576,7 @@ let rec refine_v_curves env = function
             refine_v_curves { env with epoch_v_curve = env.epoch_v_curve + 1 } t
       | exception Not_found ->
           log "WARN: common ancestor not found. skip this v-curve";
-          refine_v_curves { env with epoch_v_curve = env.epoch_v_curve + 1 } t )
+          refine_v_curves { env with epoch_v_curve = env.epoch_v_curve + 1 } t)
 
 let opts =
   [
@@ -1638,15 +1638,15 @@ let rec learning env =
         if improved then learning { env with epoch = env.epoch + 1 }
         else (
           log "No more possible refinement";
-          env ) )
+          env))
 
 let initialize is_test =
-  ( try Unix.mkdir !out_dir 0o775
-    with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
+  (try Unix.mkdir !out_dir 0o775
+   with Unix.Unix_error (Unix.EEXIST, _, _) -> ());
   let custom_dir = String.concat "-" !targets in
   let new_out_dir = !out_dir ^ "/" ^ custom_dir in
-  ( try Unix.mkdir new_out_dir 0o775
-    with Unix.Unix_error (Unix.EEXIST, _, _) -> () );
+  (try Unix.mkdir new_out_dir 0o775
+   with Unix.Unix_error (Unix.EEXIST, _, _) -> ());
   out_dir := new_out_dir;
   prerr_endline ("Logging to " ^ !out_dir);
   let log_filename = if is_test then "test.log" else "learn.log" in
@@ -1702,17 +1702,17 @@ let main () =
     if !dl_from = "" then
       failwith "One must at least specify a dl file to run test";
     let test_env = { initial_env with current_timestamp = !timestamp } in
-    run_test test_env )
+    run_test test_env)
   else (
-    ( if !use_baseline then
-      let baseline_rules =
-        if !analysis_type = "interval" then
-          Buffer_rules.buffer_overflow_rules_baseline
-        else if !analysis_type = "taint" then
-          Integer_rules.integer_overflow_rules_baseline
-        else failwith "Unknown analysis type"
-      in
-      set_baseline baseline_rules );
+    (if !use_baseline then
+     let baseline_rules =
+       if !analysis_type = "interval" then
+         Buffer_rules.buffer_overflow_rules_baseline
+       else if !analysis_type = "taint" then
+         Integer_rules.integer_overflow_rules_baseline
+       else failwith "Unknown analysis type"
+     in
+     set_baseline baseline_rules);
     if !reuse then log "Skip baseline and reuse existing result."
     else run_all initial_env;
     let { Evaluation.total_iters; _ } = Evaluation.run initial_env in
@@ -1720,6 +1720,6 @@ let main () =
       update_env initial_env.current_timestamp total_iters initial_env
     in
     log "%s" (string_of_environment env);
-    learning env |> report |> finalize )
+    learning env |> report |> finalize)
 
 let _ = main ()
