@@ -564,7 +564,7 @@ let generate_named_cons env current_rule_instance =
           let dst_dir =
             Filename.concat base_dir ("bnet-" ^ env.current_timestamp)
           in
-          if src_dir = dst_dir then () else Unix.symlink src_dir dst_dir
+          if src_dir = dst_dir then () else (try Unix.symlink src_dir dst_dir with _ -> ())
       | None ->
           log "- Generate named_cons_all of %s" bench;
           let dir =
@@ -617,8 +617,8 @@ let run_bingo env current_rule_instance =
              in
              if src_dir = dst_dir then None
              else (
-               Unix.symlink src_dir dst_dir;
-               Unix.symlink src_file dst_file;
+               (try Unix.symlink src_dir dst_dir with _ -> ());
+               (try Unix.symlink src_file dst_file with _ -> ());
                None )
          | None ->
              log "- Run %s" bench;

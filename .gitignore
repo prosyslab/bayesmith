@@ -10,6 +10,7 @@ bingo/driver
 bingo/generator
 bingo/visualizer
 bingo/equipTDU
+bingo/learn
 
 benchmarks/*/*/sparrow-out
 
